@@ -1,105 +1,57 @@
 <?php
+
 namespace App\Http\Controllers\API;
+
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function login(Request $request){
-        $validator = Validator::make($request->all(), [
-
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-        if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        return $this->createNewToken($token);
-    }
-    /**
-     * Register a User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
+    use apiResponseTrait;
+    public function register(Request $request){
+        $request->validate([
             'name' => 'required|string|between:2,100',
             'phone_number' => 'required|string|between:9,15',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
-        }
-        $user = User::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
-        return response()->json([
-            'message' => 'User successfully registered',
-            'data' => $user,
-            'stats' => 201
-        ], 201);
+
+        $user = new user([
+            'name' => $request->name,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        $user->save();
+        return $this->apiResponse($user, 'User successfully registered',200);
+
     }
 
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function logout() {
-        auth()->logout();
-        return response()->json(['message' => 'User successfully signed out']);
-    }
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh() {
-        return $this->createNewToken(auth()->refresh());
-    }
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function userProfile() {
-        return response()->json(auth()->user());
-    }
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function createNewToken($token){
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+    public function login(Request $request){
+        $validator = $request->validate([
+            'email' => 'required',
+            'password' => 'required|string',
         ]);
+        $data =request(['email','password']);
+        if (!Auth::attempt($data)){
+            return $this->apiResponse(null, 'Unauthorized',401);
+        }
+        $user = $request->user;
+        $tokenResult = $user->createToken();
+        $token = $tokenResult->token;
+        $token->expires_at = Carbon::now()->addWeek(1);
+        $token->save();
+        $array_data = [
+          'user' => Auth::user(),
+          'access_token' => $tokenResult->accessToken,
+          'token_type' => 'Bearer',
+          'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+        ];
+        return $this->apiResponse($array_data, '',201);
     }
 }
