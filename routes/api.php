@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\AuthControllerJWT;
+use App\Http\Controllers\API\Passwords\CodeCheckController;
+use App\Http\Controllers\API\Passwords\ForgotPasswordController;
+use App\Http\Controllers\API\Passwords\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +33,9 @@ Route::group([
     Route::post('/refresh', [AuthControllerJWT::class, 'refresh']);
     Route::get('/user-profile', [AuthControllerJWT::class, 'userProfile']);
 
+    Route::post('password/email',  ForgotPasswordController::class);
+    Route::post('password/code/check', CodeCheckController::class);
+    Route::post('password/reset', ResetPasswordController::class);
 //    Route::post('/login', [AuthController::class, 'login']);
 //    Route::post('/register', [AuthController::class, 'register']);
 });
