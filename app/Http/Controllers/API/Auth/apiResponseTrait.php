@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\API\Auth;
 
 trait apiResponseTrait
 {
@@ -10,6 +10,6 @@ public function apiResponse($data =null , $msg = null , $status = null){
      'message' => $msg ,
      'status' => $status ,
  ];
- return response($array , $status);
+ return response($array , 200);
 }
 }

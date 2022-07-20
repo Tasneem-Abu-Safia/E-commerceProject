@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\Passwords;
 
-use App\Http\Controllers\API\apiResponseTrait;
+use App\Http\Controllers\API\Auth\apiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Mail\SendCodeResetPassword;
 use App\Models\ResetCodePassword;

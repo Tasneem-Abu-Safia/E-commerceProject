@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\AuthControllerJWT;
+use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\Auth\AuthControllerJWT;
+use App\Http\Controllers\API\HomePage\CategoriesController;
+use App\Http\Controllers\API\HomePage\RestaurantsController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
@@ -36,6 +38,13 @@ Route::group([
     Route::post('password/email',  ForgotPasswordController::class);
     Route::post('password/code/check', CodeCheckController::class);
     Route::post('password/reset', ResetPasswordController::class);
+
+    Route::get('restaurants/view', [RestaurantsController::class,'index']);
+
+    Route::get('categories/view', [CategoriesController::class,'index']);
+
 //    Route::post('/login', [AuthController::class, 'login']);
 //    Route::post('/register', [AuthController::class, 'register']);
+
+
 });

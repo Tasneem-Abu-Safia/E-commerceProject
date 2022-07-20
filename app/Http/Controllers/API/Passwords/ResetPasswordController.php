@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\Passwords;
 
-use App\Http\Controllers\API\apiResponseTrait;
+use App\Http\Controllers\API\Auth\apiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Models\ResetCodePassword;
 use App\Models\User;
@@ -34,9 +34,8 @@ class ResetPasswordController extends Controller
         }
         //find user
         $user = User::firstWhere('email',$passwordReset->email);
-
         // update Password
-        $user->update($request->only('password'));
+        $user->update(array('password'=> bcrypt($request->password)));
 
         //delete current code
         ResetCodePassword::where('code',$request->code)->delete();
