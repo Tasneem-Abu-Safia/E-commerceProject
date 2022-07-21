@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ResetCodePassword extends Model
+class Restaurant_Category extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
+    protected $table = 'restaurant_category';
     protected $fillable = [
-        'email',
-        'code',
-        'created_at',
+        'category_id',
+        'restaurant_id'
     ];
+
 }

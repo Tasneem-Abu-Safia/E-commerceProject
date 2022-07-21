@@ -35,13 +35,25 @@ Route::group([
     Route::post('/refresh', [AuthControllerJWT::class, 'refresh']);
     Route::get('/user-profile', [AuthControllerJWT::class, 'userProfile']);
 
-    Route::post('password/email',  ForgotPasswordController::class);
+    Route::post('password/email', ForgotPasswordController::class);
     Route::post('password/code/check', CodeCheckController::class);
     Route::post('password/reset', ResetPasswordController::class);
 
-    Route::get('restaurants/view', [RestaurantsController::class,'index']);
+    Route::resource('restaurants', RestaurantsController::class);
+//    Route::get('restaurants', [RestaurantsController::class,'index']);
+//    Route::get('restaurants/{id}', [RestaurantsController::class,'show']);
+//    Route::post('restaurants', [RestaurantsController::class,'store']);
+//    Route::put('restaurants/{id}', [RestaurantsController::class,'update']);
+//    Route::delete('restaurants/{id}', [RestaurantsController::class,'destroy']);
 
-    Route::get('categories/view', [CategoriesController::class,'index']);
+    Route::resource('categories', CategoriesController::class);
+
+
+//    Route::get('categories', [CategoriesController::class,'index']);
+//    Route::get('categories/{id}', [CategoriesController::class,'show']);
+//    Route::post('categories', [CategoriesController::class,'store']);
+//    Route::put('categories/{id}', [CategoriesController::class,'update']);
+//    Route::delete('categories/{id}', [CategoriesController::class,'destroy']);
 
 //    Route::post('/login', [AuthController::class, 'login']);
 //    Route::post('/register', [AuthController::class, 'register']);

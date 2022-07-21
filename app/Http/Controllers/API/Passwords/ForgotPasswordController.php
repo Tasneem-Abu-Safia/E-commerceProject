@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\Passwords;
 
-use App\Http\Controllers\API\Auth\apiResponseTrait;
+use App\Http\Controllers\API\apiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Mail\SendCodeResetPassword;
 use App\Models\ResetCodePassword;
@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Validator;
 class ForgotPasswordController extends Controller
 {
     use apiResponseTrait;
-    public function __invoke(Request $request){
 
+    public function __invoke(Request $request)
+    {
 
 
         $data = $request->validate([

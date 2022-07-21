@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ResetCodePassword extends Model
+class Product extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable = [
-        'email',
-        'code',
-        'created_at',
-    ];
+    public function restaurant()
+    {
+        return $this->belongsTo('App\Models\Restaurant');
+    }
 }
