@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\API\HomePage\CategoriesController;
-use App\Http\Controllers\API\HomePage\RestaurantsController;
+use App\Http\Controllers\API\HomePage\CategoryController;
+use App\Http\Controllers\API\HomePage\ProductController;
+use App\Http\Controllers\API\HomePage\RestaurantController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,8 +19,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('restaurants/view', [RestaurantsController::class,'index']);
+Route::resource('restaurants', RestaurantController::class);
+Route::resource('categories', CategoryController::class);
+Route::resource('products', ProductController::class);
 
-Route::post('category/store', [CategoriesController::class,'store']);
-Route::post('restaurant/store', [RestaurantsController::class,'store']);
-Route::delete('restaurant/delete/{id}', [RestaurantsController::class,'destroy']);
+
+//Route::get('restaurants/view', [RestaurantController::class,'index']);
+//Route::post('category/store', [CategoryController::class,'store']);
+//Route::post('restaurant/store', [RestaurantController::class,'store']);
+//Route::delete('restaurant/delete/{id}', [RestaurantController::class,'destroy']);

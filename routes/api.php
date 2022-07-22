@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\AuthControllerJWT;
-use App\Http\Controllers\API\HomePage\CategoriesController;
-use App\Http\Controllers\API\HomePage\RestaurantsController;
+use App\Http\Controllers\API\HomePage\CategoryController;
+use App\Http\Controllers\API\HomePage\ProductController;
+use App\Http\Controllers\API\HomePage\RestaurantController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
@@ -39,21 +40,29 @@ Route::group([
     Route::post('password/code/check', CodeCheckController::class);
     Route::post('password/reset', ResetPasswordController::class);
 
-    Route::resource('restaurants', RestaurantsController::class);
-//    Route::get('restaurants', [RestaurantsController::class,'index']);
-//    Route::get('restaurants/{id}', [RestaurantsController::class,'show']);
-//    Route::post('restaurants', [RestaurantsController::class,'store']);
-//    Route::put('restaurants/{id}', [RestaurantsController::class,'update']);
-//    Route::delete('restaurants/{id}', [RestaurantsController::class,'destroy']);
+    Route::resource('restaurants', RestaurantController::class);
+//    Route::get('restaurants', [RestaurantController::class,'index']);
+//    Route::get('restaurants/{id}', [RestaurantController::class,'show']);
+//    Route::post('restaurants', [RestaurantController::class,'store']);
+//    Route::put('restaurants/{id}', [RestaurantController::class,'update']);
+//    Route::delete('restaurants/{id}', [RestaurantController::class,'destroy']);
 
-    Route::resource('categories', CategoriesController::class);
+    Route::resource('categories', CategoryController::class);
 
 
-//    Route::get('categories', [CategoriesController::class,'index']);
-//    Route::get('categories/{id}', [CategoriesController::class,'show']);
-//    Route::post('categories', [CategoriesController::class,'store']);
-//    Route::put('categories/{id}', [CategoriesController::class,'update']);
-//    Route::delete('categories/{id}', [CategoriesController::class,'destroy']);
+//    Route::get('categories', [CategoryController::class,'index']);
+//    Route::get('categories/{id}', [CategoryController::class,'show']);
+//    Route::post('categories', [CategoryController::class,'store']);
+//    Route::put('categories/{id}', [CategoryController::class,'update']);
+//    Route::delete('categories/{id}', [CategoryController::class,'destroy']);
+
+    Route::resource('products', ProductController::class);
+
+//    Route::get('products', [ProductController::class,'index']);
+//    Route::get('products/{id}', [ProductController::class,'show']);
+//    Route::post('products', [ProductController::class,'store']);
+//    Route::put('products/{id}', [ProductController::class,'update']);
+//    Route::delete('products/{id}', [ProductController::class,'destroy']);
 
 //    Route::post('/login', [AuthController::class, 'login']);
 //    Route::post('/register', [AuthController::class, 'register']);

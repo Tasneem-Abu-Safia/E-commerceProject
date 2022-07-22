@@ -11,7 +11,7 @@ class Restaurant_Category extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'restaurant_category';
+    protected $table = 'category_restaurant';
     protected $fillable = [
         'category_id',
         'restaurant_id'

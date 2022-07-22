@@ -10,9 +10,30 @@ class Product extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $fillable = [
+        'name',
+        'image',
+        'description',
+        'price',
+        'restaurant_id',
+        'category_id' ,
+        'discount_id' ,
+        'cal ' ,
+    ];
 
     public function restaurant()
     {
         return $this->belongsTo('App\Models\Restaurant');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function discount()
+    {
+        return $this->belongsTo(Discount::class);
+    }
+
 }

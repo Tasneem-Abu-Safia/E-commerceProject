@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class CategoriesController extends Controller
+class CategoryController extends Controller
 {
     use apiResponseTrait;
 

@@ -12,7 +12,7 @@ use App\Models\Restaurant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class RestaurantsController extends Controller
+class RestaurantController extends Controller
 {
     use apiResponseTrait;
 
