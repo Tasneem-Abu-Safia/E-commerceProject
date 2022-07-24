@@ -17,6 +17,8 @@ class ProductController extends Controller
 {
     use apiResponseTrait;
 
+    use apiResponseTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +26,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::with('restaurant')->with('category')->with('discount')->get();
+        $data = Product::with('restaurant')->with('category')
+            ->with('discount')
+            ->get();
         if ($data->isEmpty()) {
             return $this->apiResponse(null, 'Nothing to view', 401);
         }
@@ -53,16 +57,22 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'image' => 'required|string|max:20',
+            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
             'description' => 'required|string|max:50',
             'price' => 'required|numeric',
             'restaurant_id' => 'required|exists:restaurants,id',
             'category_id' => 'required|numeric|exists:categories,id',
-            'discount_id' => 'required|numeric|exists:discounts,id',
-            'cal' => 'required|numeric',
+            'discount_id' => 'exists:discounts,id',
+            'calories' => 'required|numeric',
         ]);
         $data = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
+        $path = "";
+        if ($request->hasFile('image')) {
+            $logo = $request->image;
+            $fileName = date('Y') . $logo->getClientOriginalName();
 
+            $path = $request->image->storeAs('product_image', $fileName, 'public');
+        }
 
         if (!in_array($request['category_id'], $data)) {
             if ($validator->fails()) {
@@ -70,17 +80,14 @@ class ProductController extends Controller
             }
             return $this->apiResponse(null, "Select False Category", 422);
         }
-        $product = Product::create([
-            'name' => $request['name'],
-            'image'=> $request['image'],
-            'description'=> $request['description'],
-            'price'=> $request['price'],
-            'restaurant_id'=> $request['restaurant_id'],
-            'category_id' => $request['category_id'],
-            'discount_id' => $request['discount_id'],
-            'cal ' => $request['cal'],
-            ]);
-        return $this->apiResponse($data, 'Products send successfully', 200);
+
+        $product = Product::create(array_merge(
+            $validator->validated(),
+            ['image' => $path, 'calories' => $request['calories'], 'discount_id' => $request['discount_id']],
+
+        ));
+
+        return $this->apiResponse($product, 'Products send successfully', 200);
     }
 
     /**
@@ -111,15 +118,44 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
+        $product = Product::find($id);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|String|min:4',
+            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+            'description' => 'required|string|max:50',
+            'price' => 'required|numeric',
+            'restaurant_id' => 'required|exists:restaurants,id',
+            'category_id' => 'required|numeric|exists:categories,id',
+            'discount_id' => 'exists:discounts,id',
+            'calories' => 'required|numeric',
+        ]);
+        $data = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
+        $filename = "";
+
+
+        if (!in_array($request['category_id'], $data)) {
+            if ($validator->fails()) {
+                return $this->apiResponse($validator->errors(), "fails", 422);
+            }
+            return $this->apiResponse(null, "Select False Category", 422);
+        }
+
+        if ($request->hasFile('image')) {
+            $logo = $request->image;
+            $fileName = date('Y') . $logo->getClientOriginalName();
+
+            $path = $request->image->storeAs('product_image', $fileName, 'public');
+            $product['image'] = $path;
+        }
+
+
+        $product->update($request->except('image'));
+
+
+        return $this->apiResponse($product, 'Products update successfully', 200);
 
     }
 

@@ -15,10 +15,10 @@ class Product extends Model
         'image',
         'description',
         'price',
+        'calories',
         'restaurant_id',
         'category_id' ,
         'discount_id' ,
-        'cal ' ,
     ];
 
     public function restaurant()

@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Console\Input\Input;
 
 class RestaurantController extends Controller
 {
@@ -36,36 +37,41 @@ class RestaurantController extends Controller
 
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'logo' => 'required|string|max:20',
+            'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
             'description' => 'required|string|max:20',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required|String|min:5',
-            'category_id' => 'required|numeric',
+            'category_id' => 'required|numeric|exists:categories,id',
         ]);
         if ($validator->fails()) {
             return $this->apiResponse($validator->errors(), "fails", 422);
         }
 
+        $path = "";
+        if ($request->hasFile('logo')) {
+            $logo = $request->logo;
+            $fileName = date('Y') . $logo->getClientOriginalName();
+
+            $path = $request->logo->storeAs('restaurant_image', $fileName, 'public');
+
+        }
+
+
         $restaurant = Restaurant::create(array_merge(
             $validator->validated(),
-            ['rating' => 0.0]
+            ['logo' => $path, 'rating' => 0.0]
         ));
 
-        $category = Category::where('id', $request['category_id'])->get();
 
-        if (count($category) <= 0) {
-            return $this->apiResponse(null, "category not found", 422);
+        $data = Restaurant_Category::create(array_merge(
+            ['restaurant_id' => $restaurant['id'],
+                'category_id' => $request['category_id']]
+        ));
 
-        }
-        foreach ($category as $c) {
-            $data = Restaurant_Category::create(array_merge(
-                ['restaurant_id' => $restaurant['id'],
-                    'category_id' => $c['id']]
-            ));
 
-        }
         return $this->apiResponse($restaurant, 'Restaurant successfully added', 200);
 
     }
@@ -93,10 +99,35 @@ class RestaurantController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (Restaurant::where('id', $id)->exists()) {
-            $rest = Restaurant::where('id', $id);
-            $rest->update($request->all());
-            return $this->apiResponse($rest->get(), 'Restaurant successfully updated', 200);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|String|min:4',
+            'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+            'description' => 'required|string|max:20',
+            'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'address' => 'required|String|min:5',
+            'category_id' => 'required|numeric|exists:categories,id',
+        ]);
+        if ($validator->fails()) {
+            return $this->apiResponse($validator->errors(), "fails", 422);
+        }
+        $rest = Restaurant::find($id);
+        if ($rest) {
+
+            if ($request->hasFile('logo')) {
+                $logo = $request->logo;
+                $fileName = date('Y') . $logo->getClientOriginalName();
+
+                $path = $request->logo->storeAs('restaurant_image', $fileName, 'public');
+                $rest['logo'] = $path;
+            }
+
+        //  $data = Restaurant_Category::where('restaurant_id', $rest['id'])->update(['category_id' => $request->only(['category_id'])]);
+
+            $rest->update(
+                $request->except(['category_id', 'logo']),
+
+            );
+            return $this->apiResponse($rest, 'Restaurant successfully updated', 200);
 
         } else {
             return $this->apiResponse(null, "Restaurant not found", 202);
