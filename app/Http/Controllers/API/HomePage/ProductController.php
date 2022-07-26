@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\Restaurant_Category;
+use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +27,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::with('restaurant')->with('category')
-            ->with('discount')
-            ->get();
+        $data = Product::with(['restaurant', 'category', 'discount', 'subcategory'])->orderBy('rating')->get();
         if ($data->isEmpty()) {
             return $this->apiResponse(null, 'Nothing to view', 401);
         }
@@ -62,10 +61,14 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'restaurant_id' => 'required|exists:restaurants,id',
             'category_id' => 'required|numeric|exists:categories,id',
+            'subcategory_id' => 'required|numeric|exists:subcategories,id',
             'discount_id' => 'exists:discounts,id',
             'calories' => 'required|numeric',
         ]);
-        $data = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
+
+        $allcategory_id = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
+        $subcategory = SubCategory::whereIn('category_id', $allcategory_id)->pluck('id')->toArray();
+
         $path = "";
         if ($request->hasFile('image')) {
             $logo = $request->image;
@@ -73,10 +76,14 @@ class ProductController extends Controller
 
             $path = $request->image->storeAs('product_image', $fileName, 'public');
         }
+        if ($validator->fails()) {
+            return $this->apiResponse($validator->errors(), "fails", 422);
+        }
 
-        if (!in_array($request['category_id'], $data)) {
-            if ($validator->fails()) {
-                return $this->apiResponse($validator->errors(), "fails", 422);
+        if (!in_array($request['category_id'], $allcategory_id)) {
+
+            if (!in_array($request['subcategory_id'], $subcategory)) {
+                return $this->apiResponse(null, "Select False SubCategory", 422);
             }
             return $this->apiResponse(null, "Select False Category", 422);
         }
@@ -99,7 +106,7 @@ class ProductController extends Controller
     public function show($id)
     {
         if (Product::where('id', $id)->exists()) {
-            $product = Product::with('restaurant')->with('category')->with('discount')->find($id);
+            $product = Product::with(['restaurant', 'category', 'discount', 'subcategory'])->find($id);
             return $this->apiResponse($product, 'Restaurant successfully found', 200);
 
         } else {
@@ -122,41 +129,56 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|String|min:4',
-            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
-            'description' => 'required|string|max:50',
-            'price' => 'required|numeric',
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'category_id' => 'required|numeric|exists:categories,id',
-            'discount_id' => 'exists:discounts,id',
-            'calories' => 'required|numeric',
-        ]);
-        $data = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
-        $filename = "";
+        if ($product) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|String|min:4',
+                'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+                'description' => 'required|string|max:50',
+                'price' => 'required|numeric',
+                'restaurant_id' => 'required|exists:restaurants,id',
+                'category_id' => 'required|numeric|exists:categories,id',
+                'subcategory_id' => 'required|numeric|exists:subcategories,id',
+                'discount_id' => 'exists:discounts,id',
+                'calories' => 'required|numeric',
+            ]);
 
 
-        if (!in_array($request['category_id'], $data)) {
+            $allcategory_id = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
+            $subcategory = SubCategory::whereIn('category_id', $allcategory_id)->pluck('id')->toArray();
+
+
             if ($validator->fails()) {
                 return $this->apiResponse($validator->errors(), "fails", 422);
             }
-            return $this->apiResponse(null, "Select False Category", 422);
+
+            if (!in_array($request['category_id'], $allcategory_id)) {
+
+                if (!in_array($request['subcategory_id'], $subcategory)) {
+                    return $this->apiResponse(null, "Select False SubCategory", 422);
+                }
+                return $this->apiResponse(null, "Select False Category", 422);
+            }
+
+            if ($request->hasFile('image')) {
+                $logo = $request->image;
+                $fileName = date('Y') . $logo->getClientOriginalName();
+
+                $path = $request->image->storeAs('product_image', $fileName, 'public');
+                $product['image'] = $path;
+            }
+
+
+            $product->update(
+                $request->except('image'),
+            );
+
+
+            return $this->apiResponse($product, 'Products update successfully', 200);
+        } else {
+
+            return $this->apiResponse(null, 'Products Not found', 200);
+
         }
-
-        if ($request->hasFile('image')) {
-            $logo = $request->image;
-            $fileName = date('Y') . $logo->getClientOriginalName();
-
-            $path = $request->image->storeAs('product_image', $fileName, 'public');
-            $product['image'] = $path;
-        }
-
-
-        $product->update($request->except('image'));
-
-
-        return $this->apiResponse($product, 'Products update successfully', 200);
-
     }
 
     /**

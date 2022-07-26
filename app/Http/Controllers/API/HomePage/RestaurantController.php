@@ -41,7 +41,7 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
             'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
-            'description' => 'required|string|max:20',
+            'description' => 'required|string|min:10',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required|String|min:5',
             'category_id' => 'required|numeric|exists:categories,id',
@@ -102,7 +102,7 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
             'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
-            'description' => 'required|string|max:20',
+            'description' => 'required|string|min:10',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required|String|min:5',
             'category_id' => 'required|numeric|exists:categories,id',

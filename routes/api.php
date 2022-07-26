@@ -6,7 +6,8 @@ use App\Http\Controllers\API\HomePage\CategoryController;
 use App\Http\Controllers\API\HomePage\DiscountController;
 use App\Http\Controllers\API\HomePage\ProductController;
 use App\Http\Controllers\API\HomePage\RestaurantController;
-use App\Http\Controllers\API\HomePage\SearchController;
+use App\Http\Controllers\API\HomePage\SearchFilterController;
+use App\Http\Controllers\API\HomePage\SubCategoryController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
@@ -72,12 +73,19 @@ Route::group([
     Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
 
+//    Route::resource('subcategories', SubCategoryController::class);
+    Route::get('subcategories', [SubCategoryController::class, 'index']);
+    Route::get('subcategories/{id}', [SubCategoryController::class, 'show']);
+    Route::post('subcategories', [SubCategoryController::class, 'store']);
+    Route::post('subcategories/{id}', [SubCategoryController::class, 'update']);
+    Route::delete('subcategories/{id}', [SubCategoryController::class, 'destroy']);
+
+
 //    Route::post('/login', [AuthController::class, 'login']);
 //    Route::post('/register', [AuthController::class, 'register']);
 
 //    Route::resource('discounts', DiscountController::class);
     Route::get('product/discounts/{id}', [DiscountController::class, 'showProductOffer']);
-
     Route::get('discounts', [DiscountController::class, 'index']);
     Route::get('discounts/{id}', [DiscountController::class, 'show']);
     Route::post('discounts', [DiscountController::class, 'store']);
@@ -85,6 +93,8 @@ Route::group([
     Route::delete('discounts/{id}', [DiscountController::class, 'destroy']);
 
     //Search && Filter
-    Route::get('search/{string}', [SearchController::class, 'Search']);
+    Route::get('search', [SearchFilterController::class, 'Search']);
+    Route::get('filter', [SearchFilterController::class, 'Filter']);
+
 
 });

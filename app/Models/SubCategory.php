@@ -6,14 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class SubCategory extends Model
 {
     use SoftDeletes;
     use HasFactory;
-    protected $table = 'categories';
-    public function restaurants()
+    protected $table = 'subcategories';
+    protected $fillable = ['title','description','category_id'];
+
+    public function category()
     {
-        return $this->belongsToMany(Restaurant::class);
+        return $this->belongsTo('App\Models\Category');
     }
 
     public function products()
@@ -21,8 +23,4 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function subcategories()
-    {
-        return $this->hasMany(SubCategory::class);
-    }
 }
