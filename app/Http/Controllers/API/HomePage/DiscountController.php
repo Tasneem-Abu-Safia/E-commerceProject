@@ -13,11 +13,11 @@ class DiscountController extends Controller
 {
     use apiResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Product::with('discount')->whereNotNull('discount_id')->get();
+        $data = Product::with('discount')->whereNotNull('discount_id')->paginate($request->pagesize);
         if ($data->isEmpty()) {
-            return $this->apiResponse(null, 'Nothing to view', 401);
+            return $this->apiResponse($data, 'Nothing to view', 401);
         }
         return $this->apiResponse($data, 'Products that have discount successfully sent', 200);
 
@@ -59,19 +59,19 @@ class DiscountController extends Controller
             return $this->apiResponse($discount, 'Discount successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "Discount not found", 202);
+            return $this->apiResponse([], "Discount not found", 202);
         }
     }
 
-    public function showProductOffer($id)
+    public function showProductOffer($id,Request $request)
     {
 
         if (Discount::where('id', $id)->exists()) {
-            $product = Product::with('discount')->where('discount_id',$id)->get();
+            $product = Product::with('discount')->where('discount_id',$id)->paginate($request->pagesize);;
             return $this->apiResponse($product, 'Discount successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "Discount not found", 202);
+            return $this->apiResponse([], "Discount not found", 202);
         }
     }
 
@@ -101,7 +101,7 @@ class DiscountController extends Controller
             return $this->apiResponse($discount, 'Discount successfully updated', 200);
 
         } else {
-            return $this->apiResponse(null, "Discount not found", 202);
+            return $this->apiResponse([], "Discount not found", 202);
         }
 
 
@@ -111,10 +111,10 @@ class DiscountController extends Controller
     {
         if (Discount::where('id', $id)->exists()) {
             $discount = Discount::destroy($id);
-            return $this->apiResponse(null, 'Discount successfully deleted', 200);
+            return $this->apiResponse([], 'Discount successfully deleted', 200);
 
         } else {
-            return $this->apiResponse(null, "Discount not found", 402);
+            return $this->apiResponse([], "Discount not found", 402);
         }
 
     }

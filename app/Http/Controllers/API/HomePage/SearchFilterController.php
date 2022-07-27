@@ -15,12 +15,16 @@ class SearchFilterController extends Controller
     public function Search(Request $request)
     {
         if ($request->string) {
-            $result1 = Restaurant::with('product')->where('name', 'like', '%' . $request->string . '%')->orderBy('rating')->get();
-            $result2 = Product::with('restaurant')->where('name', 'like', '%' . $request->string . '%')->get();
+            $result1 = Restaurant::where('name', 'like', '%' . $request->string . '%')
+                ->orderBy('rating')->paginate($request->pagesize);
+
+            $result2 = Product::where('name', 'like', '%' . $request->string . '%')
+                ->orderBy('rating')->paginate($request->pagesize);
+
             return $this->apiResponse(['Products' => $result2, 'Restaurant' => $result1], 'Result successfully send', 200);
 
         } else {
-            return $this->apiResponse(null, "Result not found", 402);
+            return $this->apiResponse([], "Result not found", 402);
 
         }
     }
@@ -46,7 +50,7 @@ class SearchFilterController extends Controller
             $products_query->whereBetween('price', [1, $request->price]);
         }
 
-        $products = $products_query->get();
+        $products = $products_query->paginate($request->pagesize);
 
         return $this->apiResponse($products, 'Result successfully send', 200);
 

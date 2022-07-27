@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Input\Input;
 
@@ -17,11 +18,11 @@ class RestaurantController extends Controller
 {
     use apiResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Restaurant::orderBy('rating', 'DESC')->get();
+        $data = Restaurant::orderBy('rating', 'DESC')->paginate($request->pagesize);
         if ($data->isEmpty()) {
-            return $this->apiResponse(null, 'Nothing to view', 401);
+            return $this->apiResponse($data, 'Nothing to view', 401);
         }
         $categories = Category::all();
 
@@ -53,7 +54,7 @@ class RestaurantController extends Controller
         $path = "";
         if ($request->hasFile('logo')) {
             $logo = $request->logo;
-            $fileName = date('Y') . $logo->getClientOriginalName();
+            $fileName = date('Y-m-d') . $request->name . '-' . $logo->getClientOriginalName();
 
             $path = $request->logo->storeAs('restaurant_image', $fileName, 'public');
 
@@ -62,7 +63,7 @@ class RestaurantController extends Controller
 
         $restaurant = Restaurant::create(array_merge(
             $validator->validated(),
-            ['logo' => $path, 'rating' => 0.0]
+            ['logo' => 'storage/' . $path, 'rating' => 0.0]
         ));
 
 
@@ -79,15 +80,13 @@ class RestaurantController extends Controller
 
     public function show($id)
     {
-
         if (Restaurant::where('id', $id)->exists()) {
             $rest = Restaurant::with('Product')->find($id);
             return $this->apiResponse($rest, 'Restaurant successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "Restaurant not found", 202);
+            return $this->apiResponse([], "Restaurant not found", 202);
         }
-
     }
 
 
@@ -101,7 +100,7 @@ class RestaurantController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+            'logo' => 'nullable|mimes:png,jpg,jpeg,gif|max:2048',
             'description' => 'required|string|min:10',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required|String|min:5',
@@ -114,14 +113,22 @@ class RestaurantController extends Controller
         if ($rest) {
 
             if ($request->hasFile('logo')) {
+                if ($rest->logo) {
+                    $old_path = public_path($rest->logo);
+                    if (File::exists($old_path)) {
+                        File::delete($old_path);
+                    }
+                }
                 $logo = $request->logo;
-                $fileName = date('Y') . $logo->getClientOriginalName();
-
+                $fileName = date('Y-m-d') . $rest->name . '-' . $logo->getClientOriginalName();
                 $path = $request->logo->storeAs('restaurant_image', $fileName, 'public');
-                $rest['logo'] = $path;
+                $rest['logo'] = 'storage/' . $path;
+            }
+            else {
+                $rest['logo'] = $rest->logo;
             }
 
-        //  $data = Restaurant_Category::where('restaurant_id', $rest['id'])->update(['category_id' => $request->only(['category_id'])]);
+            //  $data = Restaurant_Category::where('restaurant_id', $rest['id'])->update(['category_id' => $request->only(['category_id'])]);
 
             $rest->update(
                 $request->except(['category_id', 'logo']),
@@ -130,7 +137,7 @@ class RestaurantController extends Controller
             return $this->apiResponse($rest, 'Restaurant successfully updated', 200);
 
         } else {
-            return $this->apiResponse(null, "Restaurant not found", 202);
+            return $this->apiResponse([], "Restaurant not found", 202);
         }
     }
 
@@ -141,10 +148,10 @@ class RestaurantController extends Controller
         if (Restaurant::where('id', $id)->exists()) {
             $rest = Restaurant::destroy($id);
 //            $rest->delete();
-            return $this->apiResponse(null, 'Restaurant successfully deleted', 200);
+            return $this->apiResponse([], 'Restaurant successfully deleted', 200);
 
         } else {
-            return $this->apiResponse(null, "Restaurant not found", 202);
+            return $this->apiResponse([], "Restaurant not found", 202);
         }
     }
 }

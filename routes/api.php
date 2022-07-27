@@ -8,6 +8,7 @@ use App\Http\Controllers\API\HomePage\ProductController;
 use App\Http\Controllers\API\HomePage\RestaurantController;
 use App\Http\Controllers\API\HomePage\SearchFilterController;
 use App\Http\Controllers\API\HomePage\SubCategoryController;
+use App\Http\Controllers\API\HomePage\SettingController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
@@ -38,6 +39,10 @@ Route::group([
         Route::post('/logout', [AuthControllerJWT::class, 'logout']);
         Route::post('/refresh', [AuthControllerJWT::class, 'refresh']);
         Route::get('/user-profile', [AuthControllerJWT::class, 'userProfile']);
+        //User route
+        Route::get('user', [SettingController::class, 'userProfile']);
+        Route::post('user/updateProfile', [SettingController::class, 'updateProfile']);
+        Route::post('user/changePassword', [SettingController::class, 'changePassword']);
 
     });
 
@@ -66,6 +71,7 @@ Route::group([
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
 
 //    Route::resource('products', ProductController::class);
+//Route::apiResource('products', ProductController::class)->except(['update', 'store', 'destroy']);
 
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{id}', [ProductController::class, 'show']);

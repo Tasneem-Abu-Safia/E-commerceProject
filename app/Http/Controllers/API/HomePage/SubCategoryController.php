@@ -12,11 +12,11 @@ class SubCategoryController extends Controller
 {
     use apiResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = SubCategory::get();
+        $data = SubCategory::paginate($request->pagesize);
         if ($data->isEmpty()) {
-            return $this->apiResponse(null, 'Nothing to view', 401);
+            return $this->apiResponse($data, 'Nothing to view', 401);
         }
         return $this->apiResponse($data, 'SubCategory send successfully', 200);
     }
@@ -50,7 +50,7 @@ class SubCategoryController extends Controller
             return $this->apiResponse($subcategory, 'SubCategory successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "SubCategory not found", 202);
+            return $this->apiResponse([], "SubCategory not found", 202);
         }
 
     }
@@ -60,10 +60,10 @@ class SubCategoryController extends Controller
 
         if (SubCategory::where('id', $id)->exists()) {
             $subcategory = SubCategory::destroy($id);
-            return $this->apiResponse(null, 'SubCategory successfully deleted', 200);
+            return $this->apiResponse([], 'SubCategory successfully deleted', 200);
 
         } else {
-            return $this->apiResponse(null, "SubCategory not found", 202);
+            return $this->apiResponse([], "SubCategory not found", 202);
         }
     }
 

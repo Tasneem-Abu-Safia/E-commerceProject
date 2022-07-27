@@ -12,11 +12,11 @@ use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    use apiResponseTrait;
 
     use apiResponseTrait;
 
@@ -25,11 +25,11 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Product::with(['restaurant', 'category', 'discount', 'subcategory'])->orderBy('rating')->get();
+        $data = Product::with(['restaurant', 'category', 'subcategory'])->orderBy('rating')->paginate($request->pagesize);
         if ($data->isEmpty()) {
-            return $this->apiResponse(null, 'Nothing to view', 401);
+            return $this->apiResponse($data, 'Nothing to view', 401);
         }
         return $this->apiResponse($data, 'Products send successfully', 200);
 
@@ -72,10 +72,11 @@ class ProductController extends Controller
         $path = "";
         if ($request->hasFile('image')) {
             $logo = $request->image;
-            $fileName = date('Y') . $logo->getClientOriginalName();
+            $fileName = date('Y-m-d') . $request->name . '-' . $logo->getClientOriginalName();
 
             $path = $request->image->storeAs('product_image', $fileName, 'public');
         }
+
         if ($validator->fails()) {
             return $this->apiResponse($validator->errors(), "fails", 422);
         }
@@ -83,14 +84,14 @@ class ProductController extends Controller
         if (!in_array($request['category_id'], $allcategory_id)) {
 
             if (!in_array($request['subcategory_id'], $subcategory)) {
-                return $this->apiResponse(null, "Select False SubCategory", 422);
+                return $this->apiResponse([], "Select False SubCategory", 422);
             }
-            return $this->apiResponse(null, "Select False Category", 422);
+            return $this->apiResponse([], "Select False Category", 422);
         }
 
         $product = Product::create(array_merge(
             $validator->validated(),
-            ['image' => $path, 'calories' => $request['calories'], 'discount_id' => $request['discount_id']],
+            ['image' => 'storage/' . $path, 'calories' => $request['calories'], 'discount_id' => $request['discount_id']],
 
         ));
 
@@ -110,7 +111,7 @@ class ProductController extends Controller
             return $this->apiResponse($product, 'Restaurant successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "Restaurant not found", 202);
+            return $this->apiResponse([], "Restaurant not found", 202);
         }
     }
 
@@ -132,7 +133,7 @@ class ProductController extends Controller
         if ($product) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|String|min:4',
-                'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+                'image' => 'nullable|mimes:png,jpg,jpeg,gif|max:2048',
                 'description' => 'required|string|max:50',
                 'price' => 'required|numeric',
                 'restaurant_id' => 'required|exists:restaurants,id',
@@ -154,19 +155,27 @@ class ProductController extends Controller
             if (!in_array($request['category_id'], $allcategory_id)) {
 
                 if (!in_array($request['subcategory_id'], $subcategory)) {
-                    return $this->apiResponse(null, "Select False SubCategory", 422);
+                    return $this->apiResponse([], "Select False SubCategory", 422);
                 }
-                return $this->apiResponse(null, "Select False Category", 422);
+                return $this->apiResponse([], "Select False Category", 422);
             }
 
             if ($request->hasFile('image')) {
+                if ($product->image) {
+                    $old_path = public_path($product->image);
+                    if (File::exists($old_path)) {
+                        File::delete($old_path);
+                    }
+                }
                 $logo = $request->image;
-                $fileName = date('Y') . $logo->getClientOriginalName();
+                $fileName = date('Y-m-d') . $product->name . '-' . $logo->getClientOriginalName();
 
                 $path = $request->image->storeAs('product_image', $fileName, 'public');
-                $product['image'] = $path;
+                $product['image'] = 'storage/' . $path;
             }
-
+            else {
+                $product['image'] = $product->image;
+            }
 
             $product->update(
                 $request->except('image'),
@@ -176,7 +185,7 @@ class ProductController extends Controller
             return $this->apiResponse($product, 'Products update successfully', 200);
         } else {
 
-            return $this->apiResponse(null, 'Products Not found', 200);
+            return $this->apiResponse([], 'Products Not found', 200);
 
         }
     }
@@ -192,10 +201,10 @@ class ProductController extends Controller
         if (Product::where('id', $id)->exists()) {
             $product = Product::destroy($id);
 //            $product->delete();
-            return $this->apiResponse(null, 'Product successfully deleted', 200);
+            return $this->apiResponse([], 'Product successfully deleted', 200);
 
         } else {
-            return $this->apiResponse(null, "Product not found", 202);
+            return $this->apiResponse([], "Product not found", 202);
         }
     }
 }

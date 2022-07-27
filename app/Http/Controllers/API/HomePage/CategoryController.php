@@ -14,12 +14,12 @@ class CategoryController extends Controller
 {
     use apiResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Category::where('active', 1)->get();
+        $data = Category::where('active', 1)->paginate($request->pagesize);
 //            DB::table('categories')->where('active',0)->get();
         if ($data->isEmpty()) {
-            return $this->apiResponse(null, 'Nothing to view', 401);
+            return $this->apiResponse($data, 'Nothing to view', 401);
         }
         return $this->apiResponse($data, 'categories send successfully', 200);
     }
@@ -51,7 +51,7 @@ class CategoryController extends Controller
             return $this->apiResponse($category, 'Category successfully found', 200);
 
         } else {
-            return $this->apiResponse(null, "Category not found", 202);
+            return $this->apiResponse([], "Category not found", 202);
         }
 
     }
@@ -62,17 +62,18 @@ class CategoryController extends Controller
         if (Category::where('id', $id)->exists()) {
             $category = Category::destroy($id);
 //            $category->delete();
-            return $this->apiResponse(null, 'Category successfully deleted', 200);
+            return $this->apiResponse([], 'Category successfully deleted', 200);
 
         } else {
-            return $this->apiResponse(null, "Category not found", 202);
+            return $this->apiResponse([], "Category not found", 202);
         }
     }
 
     public function update(Request $request, $id)
     {
-        if (Category::where('id', $id)->exists()) {
-            $category = Category::where('id', $id);
+        $category = Category::where('id', $id);
+        if ($category->where('id', $id)->exists()) {
+
             if (count($request->all()) >= 1) {
                 $category->update($request->all());
                 return $this->apiResponse($category->get(), 'Category successfully updated', 200);
@@ -81,7 +82,7 @@ class CategoryController extends Controller
                 return $this->apiResponse($category->get(), 'Nothing to update', 200);
             }
         } else {
-            return $this->apiResponse(null, "Category not found", 202);
+            return $this->apiResponse([], "Category not found", 202);
         }
     }
 
