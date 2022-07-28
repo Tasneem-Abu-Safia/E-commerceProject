@@ -14,11 +14,11 @@ class SearchFilterController extends Controller
 
     public function Search(Request $request)
     {
-        if ($request->string) {
-            $result1 = Restaurant::where('name', 'like', '%' . $request->string . '%')
+        if ($request->search_query) {
+            $result1 = Restaurant::where('name', 'like', '%' . $request->search_query . '%')
                 ->orderBy('rating')->paginate($request->pagesize);
 
-            $result2 = Product::where('name', 'like', '%' . $request->string . '%')
+            $result2 = Product::where('name', 'like', '%' . $request->search_query . '%')
                 ->orderBy('rating')->paginate($request->pagesize);
 
             return $this->apiResponse(['Products' => $result2, 'Restaurant' => $result1], 'Result successfully send', 200);

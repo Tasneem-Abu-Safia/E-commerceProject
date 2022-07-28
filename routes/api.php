@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\AuthControllerJWT;
+use App\Http\Controllers\API\Cart\CartController;
+use App\Http\Controllers\API\HomePage\AddressController;
 use App\Http\Controllers\API\HomePage\CategoryController;
 use App\Http\Controllers\API\HomePage\DiscountController;
 use App\Http\Controllers\API\HomePage\ProductController;
@@ -43,6 +45,15 @@ Route::group([
         Route::get('user', [SettingController::class, 'userProfile']);
         Route::post('user/updateProfile', [SettingController::class, 'updateProfile']);
         Route::post('user/changePassword', [SettingController::class, 'changePassword']);
+        Route::get('user/myOrder', [SettingController::class, 'myOrder']);
+
+        Route::get('user/myAddresses', [AddressController::class, 'index']);
+        Route::post('user/addAddress', [AddressController::class, 'store']);
+
+        //Cart
+        Route::get('user/showCart', [CartController::class, 'showCart']);
+        Route::post('user/addToCart', [CartController::class, 'addToCart']);
+        Route::delete('user/deleteFromCart/{id}', [CartController::class, 'deleteFromCart']);
 
     });
 
@@ -91,7 +102,7 @@ Route::group([
 //    Route::post('/register', [AuthController::class, 'register']);
 
 //    Route::resource('discounts', DiscountController::class);
-    Route::get('product/discounts/{id}', [DiscountController::class, 'showProductOffer']);
+//    Route::get('product/discounts/{id}', [DiscountController::class, 'showProductOffer']);
     Route::get('discounts', [DiscountController::class, 'index']);
     Route::get('discounts/{id}', [DiscountController::class, 'show']);
     Route::post('discounts', [DiscountController::class, 'store']);

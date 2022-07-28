@@ -17,12 +17,15 @@ class Discount extends Model
         'discount_percent',
         'active',
         'deadline',
+        'product_id',
+        'price_after_Discount'
 
     ];
     protected $table = 'discounts';
 
-    public function products()
+
+    public function product()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class);
     }
 }

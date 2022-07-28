@@ -15,7 +15,7 @@ class DiscountController extends Controller
 
     public function index(Request $request)
     {
-        $data = Product::with('discount')->whereNotNull('discount_id')->paginate($request->pagesize);
+        $data = Discount::with('product')->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }
@@ -36,6 +36,8 @@ class DiscountController extends Controller
             'title' => 'required|string|max:20',
             'description' => 'required|string|min:10',
             'discount_percent' => 'required|numeric|max:100',
+            'product_id' => 'required|exists:products,id',
+            'price_after_Discount' => 'required|numeric',
             'active' => 'required|numeric|in:0,1',
             'deadline' => 'required|date_format:Y-m-d H:i:s|after_or_equal:today',
         ]);
@@ -55,25 +57,25 @@ class DiscountController extends Controller
     {
 
         if (Discount::where('id', $id)->exists()) {
-            $discount = Discount::where('id', $id)->get();
+            $discount = Discount::with('product')->where('id', $id)->get();
             return $this->apiResponse($discount, 'Discount successfully found', 200);
 
         } else {
             return $this->apiResponse([], "Discount not found", 202);
         }
     }
-
-    public function showProductOffer($id,Request $request)
-    {
-
-        if (Discount::where('id', $id)->exists()) {
-            $product = Product::with('discount')->where('discount_id',$id)->paginate($request->pagesize);;
-            return $this->apiResponse($product, 'Discount successfully found', 200);
-
-        } else {
-            return $this->apiResponse([], "Discount not found", 202);
-        }
-    }
+//
+//    public function showProductOffer($id, Request $request)
+//    {
+//
+//        if (Discount::where('id', $id)->exists()) {
+//            $product = Product::with('discount')->where('discount_id', $id)->paginate($request->pagesize);;
+//            return $this->apiResponse($product, 'Discount successfully found', 200);
+//
+//        } else {
+//            return $this->apiResponse([], "Discount not found", 202);
+//        }
+//    }
 
 
     public function edit($id)
@@ -88,6 +90,8 @@ class DiscountController extends Controller
             'title' => 'required|string|max:20',
             'description' => 'required|string|min:10',
             'discount_percent' => 'required|numeric|max:100',
+            'product_id' => 'required|exists:products,id',
+            'price_after_Discount' => 'required|numeric',
             'active' => 'required|numeric|in:0,1',
             'deadline' => 'required|date_format:Y-m-d H:i:s|after_or_equal:today',
         ]);

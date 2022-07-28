@@ -18,7 +18,6 @@ class Product extends Model
         'calories',
         'restaurant_id',
         'category_id' ,
-        'discount_id' ,
         'subcategory_id',
     ];
 
@@ -34,9 +33,8 @@ class Product extends Model
 
     public function discount()
     {
-        return $this->belongsTo('App\Models\Product');
+        return $this->hasOne('App\Models\Discount');
     }
-
     public function subcategory()
     {
         return $this->belongsTo('App\Models\SubCategory');

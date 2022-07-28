@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\HomePage;
 
 use App\Http\Controllers\API\apiResponseTrait;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -49,6 +51,7 @@ class SettingController extends Controller
         } else {
             $path = $user->image;
         }
+        $this->editAddress();
         $user->update([
             'name' => $request->name,
             'image' => $path,
@@ -71,7 +74,7 @@ class SettingController extends Controller
         $user = $request->user();
         if (Hash::check($request->old_password, $user->password)) {
             $user->update([
-                'password' => Hash::make($request->Password),
+                'password' => bcrypt($request->Password),
             ]);
             return $this->apiResponse([], 'Password successfully updated', 422);
 
@@ -80,5 +83,19 @@ class SettingController extends Controller
         }
 
     }
+
+    public function myOrder(Request $request)
+    {
+        $myorder = Order::where('user_id', Auth::id())->paginate($request->pagesize);
+        if ($myorder->isEmpty()) {
+            return $this->apiResponse([], 'Nothing to show', 200);
+
+        }
+        return $this->apiResponse($myorder, 'User Order Send successfully', 200);
+
+    }
+
+
+
 
 }

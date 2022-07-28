@@ -62,7 +62,6 @@ class ProductController extends Controller
             'restaurant_id' => 'required|exists:restaurants,id',
             'category_id' => 'required|numeric|exists:categories,id',
             'subcategory_id' => 'required|numeric|exists:subcategories,id',
-            'discount_id' => 'exists:discounts,id',
             'calories' => 'required|numeric',
         ]);
 
@@ -91,7 +90,7 @@ class ProductController extends Controller
 
         $product = Product::create(array_merge(
             $validator->validated(),
-            ['image' => 'storage/' . $path, 'calories' => $request['calories'], 'discount_id' => $request['discount_id']],
+            ['image' => 'storage/' . $path, 'calories' => $request['calories']],
 
         ));
 
@@ -139,18 +138,17 @@ class ProductController extends Controller
                 'restaurant_id' => 'required|exists:restaurants,id',
                 'category_id' => 'required|numeric|exists:categories,id',
                 'subcategory_id' => 'required|numeric|exists:subcategories,id',
-                'discount_id' => 'exists:discounts,id',
                 'calories' => 'required|numeric',
             ]);
+
+            if ($validator->fails()) {
+                return $this->apiResponse($validator->errors(), "fails", 422);
+            }
 
 
             $allcategory_id = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
             $subcategory = SubCategory::whereIn('category_id', $allcategory_id)->pluck('id')->toArray();
 
-
-            if ($validator->fails()) {
-                return $this->apiResponse($validator->errors(), "fails", 422);
-            }
 
             if (!in_array($request['category_id'], $allcategory_id)) {
 
@@ -172,8 +170,7 @@ class ProductController extends Controller
 
                 $path = $request->image->storeAs('product_image', $fileName, 'public');
                 $product['image'] = 'storage/' . $path;
-            }
-            else {
+            } else {
                 $product['image'] = $product->image;
             }
 

@@ -38,7 +38,7 @@ class RestaurantController extends Controller
 
     public function store(Request $request)
     {
-
+      //use map for address --> website
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
             'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
