@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRatingRestaurantsTable extends Migration
+class CreateReviewsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,17 @@ class CreateRatingRestaurantsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rating_restaurants', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->integer('ratingFor_id')->unsigned();
+            $table->string('ratingFor_type');
             $table->integer('rate');
-            $table->string('feedback');
+            $table->string('feedback')->nullable();
             $table->string('ipAddress');
-            $table->foreignId('restaurant_id')->constrained();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +36,6 @@ class CreateRatingRestaurantsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rating_restaurants');
+        Schema::dropIfExists('reviews');
     }
 }

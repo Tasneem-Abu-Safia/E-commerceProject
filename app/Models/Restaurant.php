@@ -30,4 +30,8 @@ class Restaurant extends Model
     {
         return $this->hasMany('App\Models\Product');
     }
+
+    public function reviews(){
+        return $this->morphMany('App\Models\Review' , 'ratingFor');
+    }
 }
