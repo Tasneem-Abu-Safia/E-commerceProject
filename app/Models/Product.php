@@ -10,6 +10,7 @@ class Product extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $fillable = [
         'name',
         'image',
@@ -17,7 +18,7 @@ class Product extends Model
         'price',
         'calories',
         'restaurant_id',
-        'category_id' ,
+        'category_id',
         'subcategory_id',
     ];
 
@@ -35,8 +36,14 @@ class Product extends Model
     {
         return $this->hasOne('App\Models\Discount');
     }
+
     public function subcategory()
     {
         return $this->belongsTo('App\Models\SubCategory');
+    }
+
+    public function reviews()
+    {
+        return $this->morphMany('App\Models\Review', 'ratingFor');
     }
 }

@@ -21,6 +21,7 @@ class CreateRestaurantsTable extends Migration
             $table->string('phoneNumber');
             $table->string('address');
             $table->tinyInteger('rating');
+            $table->Integer('NumRating')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

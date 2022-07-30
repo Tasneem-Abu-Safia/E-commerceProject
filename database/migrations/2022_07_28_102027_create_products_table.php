@@ -21,6 +21,7 @@ class CreateProductsTable extends Migration
             $table->double('price');
             $table->double('calories')->nullable();
             $table->Integer('rating')->default(0);
+            $table->Integer('NumRating')->default(0);
             $table->foreignId('restaurant_id')->nullable()
                 ->constrained()
                 ->onUpdate('cascade')
