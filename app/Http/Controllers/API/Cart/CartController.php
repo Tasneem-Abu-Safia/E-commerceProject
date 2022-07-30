@@ -23,13 +23,8 @@ class CartController extends Controller
             ['status', '=', 'Draft'],
         ])->pluck('id');
 
-        $orderDetails = Order_Details::with('')->whereIn('order_id', $order)->select('id', 'order_id', 'product_id', 'quantity', 'price')->get();
-        $itemCount = count($orderDetails);
-        $totalPrice = 0;
-        foreach ($orderDetails as $item) {
-            $totalPrice += $item->price;
-        }
-        return $this->apiResponse(['items' => $orderDetails, 'total Price ' => $totalPrice, 'itemCount' => $itemCount], "Your Cart", 200);
+        $orderDetails = Order_Details::whereIn('order_id', $order)->select('id', 'order_id', 'product_id', 'quantity', 'price')->get();
+        return $this->apiResponse($orderDetails, "Your Cart", 200);
 
 
     }
@@ -95,7 +90,8 @@ class CartController extends Controller
         ])->exists();
         if ($item) {
             return $this->apiResponse([], "Product already exist ", 422);
-        } else {
+        }
+        else {
             $order_details = new Order_Details();
             $order_details['order_id'] = $orderId;
             $order_details['product_id'] = $request->product_id;
@@ -113,7 +109,7 @@ class CartController extends Controller
 
     public function deleteFromCart($id)
     {
-        Order_Details::destroy($id);
+      Order_Details::destroy($id);
 
     }
 }
