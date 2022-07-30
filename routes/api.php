@@ -55,6 +55,8 @@ Route::group([
         //Cart
         Route::get('user/showCart', [CartController::class, 'showCart']);
         Route::post('user/addToCart', [CartController::class, 'addToCart']);
+        Route::post('user/changeQuntity', [CartController::class, 'changeQuntity']);
+        Route::get('user/checkOut', [CartController::class, 'checkOut']);
         Route::delete('user/deleteFromCart/{id}', [CartController::class, 'deleteFromCart']);
 
         //Review Product

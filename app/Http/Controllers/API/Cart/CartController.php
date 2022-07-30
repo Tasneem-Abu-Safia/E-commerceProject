@@ -25,11 +25,14 @@ class CartController extends Controller
 
         $orderDetails = Order_Details::whereIn('order_id', $order)->select('id', 'order_id', 'product_id', 'quantity', 'price')->get();
         $itemCount = count($orderDetails);
-        $totalPrice = 0;
+        $itemPrice = 0;
+
         foreach ($orderDetails as $item) {
-            $totalPrice += $item->price;
+            $itemPrice += $item->price;
         }
-        return $this->apiResponse(['items' => $orderDetails, 'total Price ' => $totalPrice, 'itemCount' => $itemCount], "Your Cart", 200);
+        $shipping = 5;
+        $totalPrice = $itemPrice + $shipping;
+        return $this->apiResponse(['items' => $orderDetails, 'item Price ' => $itemPrice, 'itemCount' => $itemCount, 'shipping' => $shipping, 'totalPrice' => $totalPrice], "Your Cart", 200);
 
 
     }
@@ -71,7 +74,7 @@ class CartController extends Controller
                     'user_id' => Auth::id(),
                     'restaurant_id' => $product->restaurant_id,
                     'totalPrice' => 0,
-                    'discount' => $request->discount,
+                    'discount' => $request->discount ? $request->discount : 0,
                     'priceAfterDiscount' => 0,
 //                    'priceAfterDiscount' => (totalPrice - (totalPrice *discount / 100)),
                     'status' => 'Draft',
@@ -99,6 +102,7 @@ class CartController extends Controller
             $order_details = new Order_Details();
             $order_details['order_id'] = $orderId;
             $order_details['product_id'] = $request->product_id;
+            $order_details['unitPrice'] = $product->price;
             $order_details['quantity'] = $request->quantity;
             if ($product->discount == null) {
                 $order_details['price'] = $request->quantity * $product->price;
@@ -115,6 +119,50 @@ class CartController extends Controller
     {
         Order_Details::destroy($id);
 
+    }
+
+    public function changeQuntity(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_item_id' => 'required|numeric|exists:order_details,id',
+            'newQuantity' => 'numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->apiResponse($validator->errors(), "fails", 422);
+        }
+        $order_item = Order_Details::find($request->order_item_id);
+        if ($order_item) {
+            if ($order_item['quantity'] != $request->newQuantity) {
+                $order_item->quantity = $request->newQuantity;
+                $order_item->price = $order_item['unitPrice'] * $request->newQuantity;
+                $order_item->save();
+                return $this->apiResponse($order_item, "update success", 422);
+            }
+        } else {
+            return $this->apiResponse([], "Not found", 422);
+
+        }
+    }
+
+    public function checkOut(Request $request)
+    {
+        $orders = Order::where([
+            ['user_id', '=', Auth::id()],
+            ['status', '=', 'Draft'],
+        ])->get();
+
+        foreach ($orders as $order) {
+            $totalPrice = 0;
+            $order_details = Order_Details::where('order_id', $order->id)->pluck('price');
+            foreach ($order_details as $order_detail) {
+                $totalPrice += $order_detail;
+            }
+            $order->totalPrice = $totalPrice;
+            $order->priceAfterDiscount = $order->totalPrice * $order->discount;
+            $order->status = 'Waiting';
+            $order->save();
+        }
     }
 }
 
