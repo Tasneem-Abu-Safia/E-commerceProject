@@ -14,8 +14,6 @@ use App\Http\Controllers\API\HomePage\SettingController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
-use App\Http\Controllers\API\Reviews\ProductReviewController;
-use App\Http\Controllers\API\Reviews\ResturantReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,14 +54,6 @@ Route::group([
         Route::get('user/showCart', [CartController::class, 'showCart']);
         Route::post('user/addToCart', [CartController::class, 'addToCart']);
         Route::delete('user/deleteFromCart/{id}', [CartController::class, 'deleteFromCart']);
-
-        //Review Product
-        Route::post('products/{product_id}/updateReview', [ProductReviewController::class, 'update']);
-        Route::delete('products/{product_id}/updateReview', [ProductReviewController::class, 'destroy']);
-
-        //Review Restaurant
-        Route::post('restaurants/{restaurant_id}/updateReview', [ResturantReviewController::class, 'update']);
-        Route::delete('restaurants/{restaurant_id}/updateReview', [ResturantReviewController::class, 'destroy']);
 
     });
 
@@ -123,14 +113,5 @@ Route::group([
     Route::get('search', [SearchFilterController::class, 'Search']);
     Route::get('filter', [SearchFilterController::class, 'Filter']);
 
-    //Review Product
-    Route::get('products/{product_id}/reviews', [ProductReviewController::class, 'index']);
-    Route::get('products/{product_id}/reviews/{id}', [ProductReviewController::class, 'show']);
-    Route::post('products/{product_id}/review', [ProductReviewController::class, 'store']);
-
-    //Review Restaurant
-    Route::get('restaurants/{restaurant_id}/reviews', [ResturantReviewController::class, 'index']);
-    Route::get('restaurants/{restaurant_id}/reviews/{id}', [ResturantReviewController::class, 'show']);
-    Route::post('restaurants/{restaurant_id}/review', [ResturantReviewController::class, 'store']);
 
 });
