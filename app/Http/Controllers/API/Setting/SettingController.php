@@ -51,7 +51,7 @@ class SettingController extends Controller
         } else {
             $path = $user->image;
         }
-        $this->editAddress();
+//        $this->editAddress();
         $user->update([
             'name' => $request->name,
             'image' => $path,
