@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API\HomePage;
+namespace App\Http\Controllers\API\Setting;
 
 use App\Http\Controllers\API\apiResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -14,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {
+
     use apiResponseTrait;
 
     public function userProfile(Request $request)
@@ -86,16 +86,12 @@ class SettingController extends Controller
 
     public function myOrder(Request $request)
     {
-        $myorder = Order::where('user_id', Auth::id())->paginate($request->pagesize);
-        if ($myorder->isEmpty()) {
-            return $this->apiResponse([], 'Nothing to show', 200);
+        $myorder = Order::with('orderDetails')->where('user_id', Auth::id())->get();
 
-        }
         return $this->apiResponse($myorder, 'User Order Send successfully', 200);
 
     }
 
 
-
-
 }
+

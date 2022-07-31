@@ -15,7 +15,7 @@ class DiscountController extends Controller
 
     public function index(Request $request)
     {
-        $data = Discount::with('product')->paginate($request->pagesize);
+        $data = Discount::with('product')->orderBy('discount_percent')->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }

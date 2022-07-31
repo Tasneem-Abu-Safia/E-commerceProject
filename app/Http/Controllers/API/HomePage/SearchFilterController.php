@@ -16,10 +16,10 @@ class SearchFilterController extends Controller
     {
         if ($request->search_query) {
             $result1 = Restaurant::where('name', 'like', '%' . $request->search_query . '%')
-                ->orderBy('rating')->paginate($request->pagesize);
+                ->orderBy('rating')->select('id', 'name', 'logo', 'rating', 'address')->paginate($request->pagesize);
 
             $result2 = Product::where('name', 'like', '%' . $request->search_query . '%')
-                ->orderBy('rating')->paginate($request->pagesize);
+                ->orderBy('rating')->select('id', 'name', 'image', 'rating', 'price', 'calories')->paginate($request->pagesize);
 
             return $this->apiResponse(['Products' => $result2, 'Restaurant' => $result1], 'Result successfully send', 200);
 
@@ -31,7 +31,7 @@ class SearchFilterController extends Controller
 
     public function Filter(Request $request)
     {
-        $products_query = Product::with(['restaurant', 'category', 'discount' ,'subcategory']);
+        $products_query = Product::with(['restaurant', 'category', 'discount', 'subcategory']);
         if ($request->category) {
             $products_query->whereHas('category', function ($query) use ($request) {
                 $query->where('title', $request->category);
@@ -43,11 +43,11 @@ class SearchFilterController extends Controller
             });
         }
         if ($request->rating) {
-            $products_query->where('rating' , $request->rating);
+            $products_query->where('rating', $request->rating);
         }
 
-        if ($request->price) {
-            $products_query->whereBetween('price', [1, $request->price]);
+        if ($request->priceMax && $request->priceMin) {
+            $products_query->whereBetween('price', [$request->priceMin, $request->priceMax]);
         }
 
         $products = $products_query->paginate($request->pagesize);

@@ -2,20 +2,21 @@
 
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\Auth\AuthControllerJWT;
+
 use App\Http\Controllers\API\Cart\CartController;
-use App\Http\Controllers\API\HomePage\AddressController;
+use App\Http\Controllers\API\Setting\AddressController;
 use App\Http\Controllers\API\HomePage\CategoryController;
 use App\Http\Controllers\API\HomePage\DiscountController;
 use App\Http\Controllers\API\HomePage\ProductController;
 use App\Http\Controllers\API\HomePage\RestaurantController;
 use App\Http\Controllers\API\HomePage\SearchFilterController;
 use App\Http\Controllers\API\HomePage\SubCategoryController;
-use App\Http\Controllers\API\HomePage\SettingController;
 use App\Http\Controllers\API\Passwords\CodeCheckController;
 use App\Http\Controllers\API\Passwords\ForgotPasswordController;
 use App\Http\Controllers\API\Passwords\ResetPasswordController;
 use App\Http\Controllers\API\Reviews\ProductReviewController;
 use App\Http\Controllers\API\Reviews\ResturantReviewController;
+use App\Http\Controllers\API\Setting\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,7 +57,7 @@ Route::group([
         Route::get('user/showCart', [CartController::class, 'showCart']);
         Route::post('user/addToCart', [CartController::class, 'addToCart']);
         Route::post('user/changeQuntity', [CartController::class, 'changeQuntity']);
-        Route::get('user/checkOut', [CartController::class, 'checkOut']);
+        Route::get('user/checkout', [CartController::class, 'checkOut']);
         Route::delete('user/deleteFromCart/{id}', [CartController::class, 'deleteFromCart']);
 
         //Review Product
@@ -68,6 +69,7 @@ Route::group([
         Route::delete('restaurants/{restaurant_id}/updateReview', [ResturantReviewController::class, 'destroy']);
 
     });
+
 
     Route::post('/login', [AuthControllerJWT::class, 'login']);
     Route::post('/register', [AuthControllerJWT::class, 'register']);

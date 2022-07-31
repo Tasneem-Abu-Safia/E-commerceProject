@@ -118,34 +118,37 @@ class CartController extends Controller
     public function deleteFromCart($id)
     {
         Order_Details::destroy($id);
+        return $this->apiResponse([], "Delete Product Done!", 200);
 
     }
 
-    public function changeQuntity(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'order_item_id' => 'required|numeric|exists:order_details,id',
-            'newQuantity' => 'numeric',
-        ]);
+    /*
+     public function changeQuntity(Request $request)
+       {
+           $validator = Validator::make($request->all(), [
+               'order_item_id' => 'required|numeric|exists:order_details,id',
+               'newQuantity' => 'numeric',
+           ]);
 
-        if ($validator->fails()) {
-            return $this->apiResponse($validator->errors(), "fails", 422);
-        }
-        $order_item = Order_Details::find($request->order_item_id);
-        if ($order_item) {
-            if ($order_item['quantity'] != $request->newQuantity) {
-                $order_item->quantity = $request->newQuantity;
-                $order_item->price = $order_item['unitPrice'] * $request->newQuantity;
-                $order_item->save();
-                return $this->apiResponse($order_item, "update success", 422);
-            }
-        } else {
-            return $this->apiResponse([], "Not found", 422);
+           if ($validator->fails()) {
+               return $this->apiResponse($validator->errors(), "fails", 422);
+           }
+           $order_item = Order_Details::find($request->order_item_id);
+           if ($order_item) {
+               if ($order_item['quantity'] != $request->newQuantity) {
+                   $order_item->quantity = $request->newQuantity;
+                   $order_item->price = $order_item['unitPrice'] * $request->newQuantity;
+                   $order_item->save();
+                   return $this->apiResponse($order_item, "update success", 422);
+               }
+           } else {
+               return $this->apiResponse([], "Not found", 422);
 
-        }
-    }
+           }
+       }
+*/
 
-    public function checkOut(Request $request)
+    public function checkOutOrderTable()
     {
         $orders = Order::where([
             ['user_id', '=', Auth::id()],
@@ -163,6 +166,26 @@ class CartController extends Controller
             $order->status = 'Waiting';
             $order->save();
         }
+    }
+
+    public function checkout(Request $request)
+    {
+        if(count($request->array) == 0){
+            return $this->apiResponse([], "Cart Empty:(", 200);
+        }
+        foreach ($request->array as $order) {
+            $orderDetails = Order_Details::find($order['id']);
+            if ($orderDetails) {
+                $orderDetails->quantity = $order['quantity'];
+                $orderDetails->price = $order['quantity'] * $orderDetails->unitPrice;
+                $orderDetails->save();
+            } else {
+                return $this->apiResponse([], "Order Not Found", 200);
+            }
+        }
+        $this->checkOutOrderTable();
+        return $this->apiResponse([], "CheckOut Done", 200);
+
     }
 }
 

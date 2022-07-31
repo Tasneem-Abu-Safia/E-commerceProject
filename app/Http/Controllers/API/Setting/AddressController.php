@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\HomePage;
+namespace App\Http\Controllers\API\Setting;
 
 use App\Http\Controllers\API\apiResponseTrait;
 use App\Http\Controllers\Controller;
