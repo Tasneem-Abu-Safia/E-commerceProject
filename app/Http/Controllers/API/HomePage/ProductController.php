@@ -61,7 +61,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'restaurant_id' => 'required|exists:restaurants,id',
             'category_id' => 'required|numeric|exists:categories,id',
-            'subcategory_id' => 'required|numeric|exists:subcategories,id',
+            'subcategory_id' => 'numeric|exists:subcategories,id',
             'calories' => 'required|numeric',
         ]);
 

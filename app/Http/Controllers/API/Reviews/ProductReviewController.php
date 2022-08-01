@@ -43,6 +43,7 @@ class ProductReviewController extends Controller
         if ($validator->fails()) {
             return $this->apiResponse($validator->errors(), "fails", 422);
         }
+        if (Product::find($request->product_id)){
         $is_IPrating = Review::withoutTrashed()->where('ipAddress', exec('getmac'))
             ->where([
                 ['ratingFor_type', '=', 'App\Models\Product'],
@@ -65,6 +66,10 @@ class ProductReviewController extends Controller
             ));
             $this->updateProductRating($request['product_id'], $request['rate']);
             return $this->apiResponse($review, 'Review added successfully!', 200);
+
+        }}
+        else{
+            return $this->apiResponse([], 'Product Not Found', 200);
 
         }
     }

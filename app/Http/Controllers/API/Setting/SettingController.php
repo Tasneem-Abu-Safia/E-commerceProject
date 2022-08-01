@@ -74,7 +74,7 @@ class SettingController extends Controller
         $user = $request->user();
         if (Hash::check($request->old_password, $user->password)) {
             $user->update([
-                'password' => bcrypt($request->Password),
+                'password' => bcrypt($request['password']),
             ]);
             return $this->apiResponse([], 'Password successfully updated', 422);
 
