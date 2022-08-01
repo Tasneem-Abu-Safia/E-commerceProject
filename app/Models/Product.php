@@ -20,6 +20,7 @@ class Product extends Model
         'restaurant_id',
         'category_id',
         'subcategory_id',
+        'active',
     ];
 
     public function restaurant()

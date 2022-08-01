@@ -63,6 +63,7 @@ class ProductController extends Controller
             'category_id' => 'required|numeric|exists:categories,id',
             'subcategory_id' => 'numeric|exists:subcategories,id',
             'calories' => 'required|numeric',
+            'active' => 'required|numeric|in:0,1',
         ]);
 
         $allcategory_id = Restaurant_Category::where('restaurant_id', $request->restaurant_id)->pluck('category_id')->toArray();
