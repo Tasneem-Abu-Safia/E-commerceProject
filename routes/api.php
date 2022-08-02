@@ -44,6 +44,7 @@ Route::group([
         Route::post('/logout', [AuthControllerJWT::class, 'logout']);
         Route::post('/refresh', [AuthControllerJWT::class, 'refresh']);
         Route::get('/user-profile', [AuthControllerJWT::class, 'userProfile']);
+
         //User route
         Route::get('user', [SettingController::class, 'userProfile']);
         Route::post('user/updateProfile', [SettingController::class, 'updateProfile']);

@@ -48,7 +48,10 @@ class AuthControllerJWT extends Controller
             $validator->validated(),
             ['password' => bcrypt($request->password)]
         ));
-        return $this->apiResponse($user, 'User successfully registered',201);
+        if (! $token = auth()->attempt($validator->validated())) {
+            return $this->apiResponse(['error' => 'Unauthorized'],"fails",401);
+        }
+        return $this->createNewToken($token);
 
     }
 
