@@ -18,10 +18,12 @@ class ForgotPasswordController extends Controller
     {
 
 
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users',
         ]);
-
+        if ($validator->fails()) {
+            return $this->apiResponse($validator->errors(), "fails", 422);
+        }
         // Delete all old code that user send before.
         ResetCodePassword::where('email', $request->email)->delete();
 
