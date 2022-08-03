@@ -18,7 +18,9 @@ class Restaurant extends Model
         'description',
         'phoneNumber',
         'address',
-        'rating'
+        'rating',
+        'start_at',
+        'end_at'
     ];
 
     public function categories()
@@ -28,10 +30,11 @@ class Restaurant extends Model
 
     public function product()
     {
-        return $this->hasMany('App\Models\Product');
+        return $this->hasMany(Product::class);
     }
 
-    public function reviews(){
-        return $this->morphMany('App\Models\Review' , 'ratingFor');
+    public function reviews()
+    {
+        return $this->morphMany('App\Models\Review', 'ratingFor');
     }
 }

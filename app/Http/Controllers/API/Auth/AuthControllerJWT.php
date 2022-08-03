@@ -67,7 +67,7 @@ class AuthControllerJWT extends Controller
 
     public function userProfile() {
 
-        return $this->apiResponse(auth()->user(), 'UserProfile',201);
+        return $this->apiResponse(Auth::user()->only(['id', 'name','image' ,'phone_number', 'email']), 'UserProfile',201);
     }
 
     protected function createNewToken($token){

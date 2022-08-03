@@ -16,12 +16,6 @@ class SettingController extends Controller
 
     use apiResponseTrait;
 
-    public function userProfile(Request $request)
-    {
-        $user = Auth::user();
-        return $this->apiResponse($user, 'User Send successfully', 200);
-
-    }
 
     public function updateProfile(Request $request)
     {
