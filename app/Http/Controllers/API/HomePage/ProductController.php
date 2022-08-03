@@ -40,7 +40,7 @@ class ProductController extends Controller
     {
         $data = Product::orderBy('rating', 'DESC')->take(6)->get(['id' , 'name' ,'image','rating','price']);
 
-        return $this->apiResponse(['products' => $data], 'Products send successfully', 200);
+        return $this->apiResponse( $data, 'Products send successfully', 200);
     }
 
     /**
@@ -115,10 +115,10 @@ class ProductController extends Controller
     {
         if (Product::where('id', $id)->exists()) {
             $product = Product::with(['restaurant', 'category', 'discount', 'subcategory'])->find($id);
-            return $this->apiResponse($product, 'Restaurant successfully found', 200);
+            return $this->apiResponse($product, 'Product successfully found', 200);
 
         } else {
-            return $this->apiResponse([], "Restaurant not found", 202);
+            return $this->apiResponse([], "Product not found", 202);
         }
     }
 

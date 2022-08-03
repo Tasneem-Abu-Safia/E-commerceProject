@@ -33,7 +33,7 @@ class RestaurantController extends Controller
     {
         $data = Restaurant::orderBy('rating', 'DESC')->take(6)->get(['id' , 'name' ,'logo']);
 
-        return $this->apiResponse(['restaurants' => $data], 'Restaurants send successfully', 200);
+        return $this->apiResponse($data, 'Restaurants send successfully', 200);
     }
 
     public function create()
