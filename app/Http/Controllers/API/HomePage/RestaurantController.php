@@ -29,6 +29,12 @@ class RestaurantController extends Controller
         return $this->apiResponse(['restaurants' => $data, 'categories' => $categories], 'Restaurants send successfully', 200);
     }
 
+    public function popularRestaurant()
+    {
+        $data = Restaurant::orderBy('rating', 'DESC')->take(6)->get(['id' , 'name' ,'logo']);
+
+        return $this->apiResponse(['restaurants' => $data], 'Restaurants send successfully', 200);
+    }
 
     public function create()
     {
@@ -38,7 +44,7 @@ class RestaurantController extends Controller
 
     public function store(Request $request)
     {
-      //use map for address --> website
+        //use map for address --> website
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
             'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
@@ -123,8 +129,7 @@ class RestaurantController extends Controller
                 $fileName = date('Y-m-d') . $rest->name . '-' . $logo->getClientOriginalName();
                 $path = $request->logo->storeAs('restaurant_image', $fileName, 'public');
                 $rest['logo'] = 'storage/' . $path;
-            }
-            else {
+            } else {
                 $rest['logo'] = $rest->logo;
             }
 

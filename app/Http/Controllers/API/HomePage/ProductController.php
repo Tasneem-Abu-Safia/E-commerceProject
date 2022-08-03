@@ -36,6 +36,13 @@ class ProductController extends Controller
 
     }
 
+    public function popularProduct()
+    {
+        $data = Product::orderBy('rating', 'DESC')->take(6)->get(['id' , 'name' ,'image','rating','price']);
+
+        return $this->apiResponse(['products' => $data], 'Products send successfully', 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

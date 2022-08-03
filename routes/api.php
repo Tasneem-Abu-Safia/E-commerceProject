@@ -82,6 +82,7 @@ Route::group([
 
 //    Route::resource('restaurants', RestaurantController::class);
     Route::get('restaurants', [RestaurantController::class, 'index']);
+    Route::get('restaurants/popularRestaurant', [RestaurantController::class, 'popularRestaurant']);
     Route::get('restaurants/{id}', [RestaurantController::class, 'show']);
     Route::post('restaurants', [RestaurantController::class, 'store']);
     Route::post('restaurants/{id}', [RestaurantController::class, 'update']);
@@ -100,6 +101,7 @@ Route::group([
 //Route::apiResource('products', ProductController::class)->except(['update', 'store', 'destroy']);
 
     Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/popularProduct', [ProductController::class, 'popularProduct']);
     Route::get('products/{id}', [ProductController::class, 'show']);
     Route::post('products', [ProductController::class, 'store']);
     Route::post('products/{id}', [ProductController::class, 'update']);
