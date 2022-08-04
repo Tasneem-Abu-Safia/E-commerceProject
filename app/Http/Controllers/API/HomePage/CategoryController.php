@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        $data = Category::where('active', 1)->paginate($request->pagesize);
+        $data = Category::where('active', 1)->get('title');
 //            DB::table('categories')->where('active',0)->get();
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);

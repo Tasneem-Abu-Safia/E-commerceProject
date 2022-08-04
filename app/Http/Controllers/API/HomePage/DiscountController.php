@@ -15,7 +15,11 @@ class DiscountController extends Controller
 
     public function index(Request $request)
     {
-        $data = Discount::with('product')->orderBy('discount_percent')->paginate($request->pagesize);
+        $data = Discount::with(['product' => function($q){
+            $q->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id']);
+        }])->orderBy('discount_percent')
+            ->select(['id','title','product_id','discount_percent','price_after_Discount','deadline'])
+            ->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }
@@ -57,7 +61,11 @@ class DiscountController extends Controller
     {
 
         if (Discount::where('id', $id)->exists()) {
-            $discount = Discount::with('product')->where('id', $id)->get();
+            $discount = Discount::with(['product' => function($q){
+                $q->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id']);
+            }])->orderBy('discount_percent')
+                ->select(['id','title','product_id','discount_percent','price_after_Discount','deadline'])
+                ->find($id);
             return $this->apiResponse($discount, 'Discount successfully found', 200);
 
         } else {

@@ -18,7 +18,7 @@ class ProductReviewController extends Controller
     {
         $productReview = Review::with(['user' => function ($query) {
             $query->select('id', 'image');
-        }])->where([
+            }])->where([
             ['ratingFor_type', '=', 'App\Models\Product'],
             ['ratingFor_id', '=', $request['product_id']]
         ])->orderBy('rate')->get();

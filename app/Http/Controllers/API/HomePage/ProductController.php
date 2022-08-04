@@ -27,7 +27,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Product::with(['restaurant', 'category', 'subcategory'])->orderBy('rating')->paginate($request->pagesize);
+        $data = Product::orderBy('rating')
+            ->select(['id','name','image','price','calories','description','rating','NumRating','restaurant_id'])
+            ->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }
@@ -114,7 +116,7 @@ class ProductController extends Controller
     public function show($id)
     {
         if (Product::where('id', $id)->exists()) {
-            $product = Product::with(['restaurant', 'category', 'discount', 'subcategory'])->find($id);
+            $product = Product::with(['discount'])->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id'])->find($id);
             return $this->apiResponse($product, 'Product successfully found', 200);
 
         } else {
