@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\HomePage\CategoryController;
 use App\Http\Controllers\API\HomePage\ProductController;
 use App\Http\Controllers\API\HomePage\RestaurantController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,15 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Auth::routes();
+
+
+    Route::group(['middleware' => ['guest']], function () {
+        Route::get('home', function () {
+            return view('home');
+        });
+
 });
-Route::resource('restaurants', RestaurantController::class);
-Route::resource('categories', CategoryController::class);
-Route::resource('products', ProductController::class);
-
-
-//Route::get('restaurants/view', [RestaurantController::class,'index']);
-//Route::post('category/store', [CategoryController::class,'store']);
-//Route::post('restaurant/store', [RestaurantController::class,'store']);
-//Route::delete('restaurant/delete/{id}', [RestaurantController::class,'destroy']);
