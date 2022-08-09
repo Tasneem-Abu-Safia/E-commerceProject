@@ -35,9 +35,7 @@ class RestaurantController extends Controller
 
     public function popularRestaurant()
     {
-        $data = Restaurant::with(['product' => function ($query) {
-            $query->where('active', 1)->get();
-        }])->orderBy('rating', 'DESC')->take(6)
+        $data = Restaurant::with('product')->orderBy('rating', 'DESC')->take(6)
             ->get(['id', 'name', 'logo', 'rating', 'NumRating', 'address', 'start_at', 'end_at']);
         return $this->apiResponse($data, 'Restaurants send successfully', 200);
     }
@@ -95,9 +93,7 @@ class RestaurantController extends Controller
     public function show($id)
     {
         if (Restaurant::where('id', $id)->exists()) {
-            $rest = Restaurant::with(['product' => function ($query) {
-                $query->where('active', 1)->get(['id', 'name', 'image', 'price', 'calories', 'rating']);
-            }])->where('id', $id)
+            $rest = Restaurant::with(['product'])->where('id', $id)
                 ->get(['id', 'name', 'logo', 'rating', 'NumRating', 'address', 'start_at', 'end_at']);
 
             return $this->apiResponse($rest, 'Restaurant successfully found', 200);

@@ -15,10 +15,10 @@ class DiscountController extends Controller
 
     public function index(Request $request)
     {
-        $data = Discount::with(['product' => function($q){
-            $q->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id']);
+        $data = Discount::with(['product' => function ($q) {
+            $q->select(['id', 'name', 'image', 'price', 'description', 'calories', 'active', 'rating', 'NumRating', 'restaurant_id']);
         }])->orderBy('discount_percent')
-            ->select(['id','title','product_id','discount_percent','price_after_Discount','deadline'])
+            ->select(['id', 'title', 'product_id', 'discount_percent', 'price_after_Discount', 'deadline'])
             ->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
@@ -27,10 +27,8 @@ class DiscountController extends Controller
 
     }
 
-
     public function create()
     {
-
     }
 
 
@@ -41,15 +39,19 @@ class DiscountController extends Controller
             'description' => 'required|string|min:10',
             'discount_percent' => 'required|numeric|max:100',
             'product_id' => 'required|exists:products,id',
-            'price_after_Discount' => 'required|numeric',
             'active' => 'required|numeric|in:0,1',
             'deadline' => 'required|date_format:Y-m-d H:i:s|after_or_equal:today',
         ]);
         if ($validator->fails()) {
             return $this->apiResponse($validator->errors(), "fails", 422);
         }
+
+        $product = Product::find($request->product_id);
         $discount = Discount::create(array_merge(
-            $validator->validated()
+            $validator->validated(),
+            [
+                'price_after_Discount' => ($product->price - ($product->price * $request->discount_percent / 100)),
+            ]
         ));
 
         return $this->apiResponse($discount, 'Discount successfully added', 200);
@@ -61,10 +63,10 @@ class DiscountController extends Controller
     {
 
         if (Discount::where('id', $id)->exists()) {
-            $discount = Discount::with(['product' => function($q){
-                $q->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id']);
+            $discount = Discount::with(['product' => function ($q) {
+                $q->select(['id', 'name', 'image', 'price', 'description', 'calories', 'active', 'rating', 'NumRating', 'restaurant_id']);
             }])->orderBy('discount_percent')
-                ->select(['id','title','product_id','discount_percent','price_after_Discount','deadline'])
+                ->select(['id', 'title', 'product_id', 'discount_percent', 'price_after_Discount', 'deadline'])
                 ->find($id);
             return $this->apiResponse($discount, 'Discount successfully found', 200);
 
@@ -99,7 +101,6 @@ class DiscountController extends Controller
             'description' => 'required|string|min:10',
             'discount_percent' => 'required|numeric|max:100',
             'product_id' => 'required|exists:products,id',
-            'price_after_Discount' => 'required|numeric',
             'active' => 'required|numeric|in:0,1',
             'deadline' => 'required|date_format:Y-m-d H:i:s|after_or_equal:today',
         ]);
@@ -108,8 +109,14 @@ class DiscountController extends Controller
             return $this->apiResponse($validator->errors(), "fails", 422);
         }
         $discount = Discount::find($id);
+        $product = Product::find($request->product_id);
+
         if ($discount) {
-            $discount->update($validator->validated());
+            $discount->update($validator->validated(),
+
+                [
+                    'price_after_Discount' => ($product->price - ($product->price * $request->discount_percent / 100))
+                ]);
             return $this->apiResponse($discount, 'Discount successfully updated', 200);
 
         } else {

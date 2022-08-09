@@ -28,7 +28,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $data = Product::orderBy('rating')
-            ->select(['id','name','image','price','calories','description','rating','NumRating','restaurant_id'])
+            ->select(['id', 'name', 'image', 'price', 'calories', 'description', 'active', 'rating', 'NumRating', 'restaurant_id'])
             ->paginate($request->pagesize);
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
@@ -40,9 +40,9 @@ class ProductController extends Controller
 
     public function popularProduct()
     {
-        $data = Product::orderBy('rating', 'DESC')->take(6)->get(['id' , 'name' ,'image','rating','price']);
+        $data = Product::orderBy('rating', 'DESC')->take(6)->get(['id', 'name', 'image', 'price', 'calories', 'description', 'active', 'rating', 'NumRating', 'restaurant_id']);
 
-        return $this->apiResponse( $data, 'Products send successfully', 200);
+        return $this->apiResponse($data, 'Products send successfully', 200);
     }
 
     /**
@@ -116,7 +116,9 @@ class ProductController extends Controller
     public function show($id)
     {
         if (Product::where('id', $id)->exists()) {
-            $product = Product::with(['discount'])->select(['id','name','image','price','description','calories','active','rating','NumRating','restaurant_id'])->find($id);
+            $product = Product::with(['discount' => function ($q) use ($id) {
+                $q->where('active' , 1)->orderBy('id', 'desc')->first();
+            }])->select(['id', 'name', 'image', 'price', 'description', 'calories', 'active', 'rating', 'NumRating', 'restaurant_id'])->find($id);
             return $this->apiResponse($product, 'Product successfully found', 200);
 
         } else {
