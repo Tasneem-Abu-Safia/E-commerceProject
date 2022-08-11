@@ -28,8 +28,8 @@ class RestaurantController extends Controller
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }
-        $categories = Category::where('active', 1)->get('title');
-
+        $categories = Category::where('active', 1)->pluck('title');
+        $categories->prepend("All");;
         return $this->apiResponse(['restaurants' => $data, 'categories' => $categories], 'Restaurants send successfully', 200);
     }
 
