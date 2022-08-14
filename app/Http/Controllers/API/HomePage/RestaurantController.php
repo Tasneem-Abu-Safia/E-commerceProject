@@ -46,7 +46,7 @@ class RestaurantController extends Controller
         //use map for address --> website
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'logo' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+            'logo' => 'required|mimes:png,jpg,jpeg,gif',
             'description' => 'required|string|min:10',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'start_at' => 'required|date_format:H:i',
@@ -108,7 +108,7 @@ class RestaurantController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'logo' => 'nullable|mimes:png,jpg,jpeg,gif|max:2048',
+            'logo' => 'nullable|mimes:png,jpg,jpeg,gif',
             'description' => 'required|string|min:10',
             'phoneNumber' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'address' => 'required|String|min:5',

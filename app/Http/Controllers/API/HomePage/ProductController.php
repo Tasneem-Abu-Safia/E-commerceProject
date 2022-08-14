@@ -65,7 +65,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'image' => 'required|mimes:png,jpg,jpeg,gif|max:2048',
+            'image' => 'required|mimes:png,jpg,jpeg,gif',
             'description' => 'required|string|max:50',
             'price' => 'required|numeric',
             'restaurant_id' => 'required|exists:restaurants,id',
@@ -144,7 +144,7 @@ class ProductController extends Controller
         if ($product) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|String|min:4',
-                'image' => 'nullable|mimes:png,jpg,jpeg,gif|max:2048',
+                'image' => 'nullable|mimes:png,jpg,jpeg,gif',
                 'description' => 'required|string|max:50',
                 'price' => 'required|numeric',
                 'restaurant_id' => 'required|exists:restaurants,id',

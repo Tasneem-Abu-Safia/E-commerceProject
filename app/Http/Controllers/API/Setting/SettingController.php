@@ -21,7 +21,7 @@ class SettingController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|String|min:4',
-            'image' => 'nullable|mimes:png,jpg,jpeg,gif|max:2048',
+            'image' => 'nullable|mimes:png,jpg,jpeg,gif',
         ]);
 
         if ($validator->fails()) {
@@ -80,7 +80,7 @@ class SettingController extends Controller
 
     public function myOrder(Request $request)
     {
-        $myorder = Order::with('orderDetails')->where('user_id', Auth::id())->get();
+        $myorder = Order::with('orderDetails')->where('user_id', Auth::id())->where('status', '<>', 'Draft')->get();
 
         return $this->apiResponse($myorder, 'User Order Send successfully', 200);
 
