@@ -70,7 +70,7 @@ class SettingController extends Controller
             $user->update([
                 'password' => bcrypt($request['password']),
             ]);
-            return $this->apiResponse([], 'Password successfully updated', 422);
+            return $this->apiResponse([], 'Password successfully updated', 200);
 
         } else {
             return $this->apiResponse([], 'Old password does not matched', 422);
