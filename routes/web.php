@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\HomePage\CategoryController;
 use App\Http\Controllers\API\HomePage\ProductController;
 use App\Http\Controllers\API\HomePage\RestaurantController;
+use App\Http\Controllers\Web\DashBoard\CategoryController;
+use App\Http\Controllers\Web\DashBoard\LocalizationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -18,13 +19,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+//Route::group(['middleware' => ['auth']], function () {
+//
+//});
+//
 
-Auth::routes();
-
-
-    Route::group(['middleware' => ['guest']], function () {
-        Route::get('home', function () {
-            return view('home');
-        });
-
+Route::get('/', function () {
+    return view('welcome');
 });
+

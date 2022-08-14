@@ -84,6 +84,8 @@ Route::group([
     Route::get('restaurants', [RestaurantController::class, 'index']);
     Route::get('restaurants/popularRestaurant', [RestaurantController::class, 'popularRestaurant']);
     Route::get('restaurants/{id}', [RestaurantController::class, 'show']);
+
+    //web
     Route::post('restaurants', [RestaurantController::class, 'store']);
     Route::post('restaurants/{id}', [RestaurantController::class, 'update']);
     Route::delete('restaurants/{id}', [RestaurantController::class, 'destroy']);
@@ -93,6 +95,8 @@ Route::group([
 
     Route::get('categories', [CategoryController::class, 'index']);
     Route::get('categories/{id}', [CategoryController::class, 'show']);
+
+    //web
     Route::post('categories', [CategoryController::class, 'store']);
     Route::post('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
@@ -103,6 +107,7 @@ Route::group([
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/popularProduct', [ProductController::class, 'popularProduct']);
     Route::get('products/{id}', [ProductController::class, 'show']);
+    //web
     Route::post('products', [ProductController::class, 'store']);
     Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
@@ -110,6 +115,8 @@ Route::group([
 //    Route::resource('subcategories', SubCategoryController::class);
     Route::get('subcategories', [SubCategoryController::class, 'index']);
     Route::get('subcategories/{id}', [SubCategoryController::class, 'show']);
+
+    //web
     Route::post('subcategories', [SubCategoryController::class, 'store']);
     Route::post('subcategories/{id}', [SubCategoryController::class, 'update']);
     Route::delete('subcategories/{id}', [SubCategoryController::class, 'destroy']);
@@ -122,6 +129,7 @@ Route::group([
 //    Route::get('product/discounts/{id}', [DiscountController::class, 'showProductOffer']);
     Route::get('discounts', [DiscountController::class, 'index']);
     Route::get('discounts/{id}', [DiscountController::class, 'show']);
+    //web
     Route::post('discounts', [DiscountController::class, 'store']);
     Route::post('discounts/{id}', [DiscountController::class, 'update']);
     Route::delete('discounts/{id}', [DiscountController::class, 'destroy']);
