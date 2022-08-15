@@ -21,7 +21,7 @@ class CreateReviewsTable extends Migration
                 ->onDelete('cascade');
             $table->integer('ratingFor_id')->unsigned();
             $table->string('ratingFor_type');
-            $table->integer('rate');
+            $table->double('rate');
             $table->string('feedback')->nullable();
             $table->string('ipAddress');
             $table->timestamps();
