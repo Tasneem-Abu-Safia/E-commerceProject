@@ -63,11 +63,11 @@ Route::group([
 
         //Review Product
         Route::post('products/{product_id}/updateReview', [ProductReviewController::class, 'update']);
-        Route::delete('products/{product_id}/updateReview', [ProductReviewController::class, 'destroy']);
+        Route::delete('products/{product_id}/deleteReview', [ProductReviewController::class, 'destroy']);
 
         //Review Restaurant
         Route::post('restaurants/{restaurant_id}/updateReview', [ResturantReviewController::class, 'update']);
-        Route::delete('restaurants/{restaurant_id}/updateReview', [ResturantReviewController::class, 'destroy']);
+        Route::delete('restaurants/{restaurant_id}/deleteReview', [ResturantReviewController::class, 'destroy']);
 
     });
 

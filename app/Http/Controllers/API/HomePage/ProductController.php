@@ -144,13 +144,14 @@ class ProductController extends Controller
         if ($product) {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|String|min:4',
-                'image' => 'nullable|mimes:png,jpg,jpeg,gif',
+                'image' => 'required|mimes:png,jpg,jpeg,gif',
                 'description' => 'required|string|max:50',
                 'price' => 'required|numeric',
                 'restaurant_id' => 'required|exists:restaurants,id',
                 'category_id' => 'required|numeric|exists:categories,id',
-                'subcategory_id' => 'required|numeric|exists:subcategories,id',
+                'subcategory_id' => 'numeric|exists:subcategories,id',
                 'calories' => 'required|numeric',
+                'active' => 'required|numeric|in:0,1',
             ]);
 
             if ($validator->fails()) {
