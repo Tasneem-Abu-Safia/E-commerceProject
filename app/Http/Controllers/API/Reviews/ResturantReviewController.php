@@ -16,9 +16,7 @@ class ResturantReviewController extends Controller
 
     public function index(Request $request)
     {
-        $restaurantReview = Review::with(['user' => function ($query) {
-            $query->select('id', 'image');
-        }])->where([
+        $restaurantReview = Review::with(['user'])->where([
             ['ratingFor_type', '=', 'App\Models\Restaurant'],
             ['ratingFor_id', '=', $request['restaurant_id']]
         ])->orderBy('rate')->get();

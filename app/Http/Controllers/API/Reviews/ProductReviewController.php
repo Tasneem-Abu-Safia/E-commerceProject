@@ -16,12 +16,11 @@ class ProductReviewController extends Controller
 
     public function index(Request $request)
     {
-        $productReview = Review::with(['user' => function ($query) {
-            $query->select('id', 'image');
-            }])->where([
+        $productReview = Review::with(['user'])->where([
             ['ratingFor_type', '=', 'App\Models\Product'],
             ['ratingFor_id', '=', $request['product_id']]
-        ])->orderBy('rate')->get();
+          ])->orderBy('rate')->get();
+
         return $this->apiResponse($productReview, 'All Product Review', 200);
     }
 
