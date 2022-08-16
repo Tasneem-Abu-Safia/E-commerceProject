@@ -116,8 +116,17 @@ class CartController extends Controller
 
     public function deleteFromCart($id)
     {
-        Order_Details::destroy($id);
-        return $this->apiResponse([], "Delete Product Done!", 200);
+
+       $order = Order_Details::find($id);
+       if ($order){
+           Order_Details::destroy($id);
+           return $this->apiResponse([], "Delete Product Done!", 200);
+
+       }
+       else{
+           return $this->apiResponse([], "Product Not Found!", 200);
+
+       }
 
     }
 
