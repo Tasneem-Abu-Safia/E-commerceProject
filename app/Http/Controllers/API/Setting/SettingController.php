@@ -80,7 +80,7 @@ class SettingController extends Controller
 
     public function myOrder(Request $request)
     {
-        $myorder = Order::with('orderDetails')->where('user_id', Auth::id())->get();
+        $myorder = Order::with('orderDetails')->where('user_id', $request->user()->id)->get();
 
         return $this->apiResponse($myorder, 'User Order Send successfully', 200);
 

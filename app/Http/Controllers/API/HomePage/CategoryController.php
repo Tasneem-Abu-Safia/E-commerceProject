@@ -30,6 +30,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:20',
             'active' => 'required|numeric|in:0,1',
+            'description' => 'string',
         ]);
         if ($validator->fails()) {
             return $this->apiResponse($validator->errors(), "fails", 422);

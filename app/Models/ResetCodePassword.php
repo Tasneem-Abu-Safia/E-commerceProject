@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ResetCodePassword extends Model
 {
-    use SoftDeletes;
-    use HasFactory;
 
+    use HasFactory;
     protected $fillable = [
         'email',
         'code',

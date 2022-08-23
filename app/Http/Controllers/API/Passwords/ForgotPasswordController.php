@@ -29,7 +29,7 @@ class ForgotPasswordController extends Controller
 
         // Generate random code
         $data['code'] = mt_rand(100000, 999999);
-
+        $data['email'] = $request->email;
         // Create a new code
         $codeData = ResetCodePassword::create($data);
 
