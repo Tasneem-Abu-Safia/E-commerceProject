@@ -14,7 +14,7 @@ class SubCategoryController extends Controller
 
     public function index(Request $request)
     {
-        $data = SubCategory::paginate($request->pagesize);
+        $data = SubCategory::pluck('title');
         if ($data->isEmpty()) {
             return $this->apiResponse($data, 'Nothing to view', 401);
         }

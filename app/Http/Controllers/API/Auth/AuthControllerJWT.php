@@ -37,7 +37,7 @@ class AuthControllerJWT extends Controller
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
-            'phone_number' => 'required|string|between:9,15',
+            'phone_number' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
         ]);

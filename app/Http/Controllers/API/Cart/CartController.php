@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Order_Details;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +23,9 @@ class CartController extends Controller
             ['status', '=', 'Draft'],
         ])->pluck('id');
 
-        $orderDetails = Order_Details::whereIn('order_id', $order)->select('id', 'order_id', 'product_id', 'quantity', 'price')->get();
+        $orderDetails = Order_Details::whereIn('order_id', $order)
+            ->select('id', 'order_id', 'product_id', 'quantity', 'price')
+            ->get();
         $itemCount = count($orderDetails);
         $itemPrice = 0;
 
@@ -117,16 +120,15 @@ class CartController extends Controller
     public function deleteFromCart($id)
     {
 
-       $order = Order_Details::find($id);
-       if ($order){
-           Order_Details::destroy($id);
-           return $this->apiResponse([], "Delete Product Done!", 200);
+        $order = Order_Details::find($id);
+        if ($order) {
+            $order->delete();
+            return $this->apiResponse([], "Delete Product Done!", 200);
 
-       }
-       else{
-           return $this->apiResponse([], "Product Not Found!", 200);
+        } else {
+            return $this->apiResponse([], "Product Not Found!", 200);
 
-       }
+        }
 
     }
 
@@ -163,36 +165,64 @@ class CartController extends Controller
             ['status', '=', 'Draft'],
         ])->get();
 
-        foreach ($orders as $order) {
-            $totalPrice = 0;
-            $order_details = Order_Details::where('order_id', $order->id)->pluck('price');
-            foreach ($order_details as $order_detail) {
-                $totalPrice += $order_detail;
+        if ($orders->count() > 0) {
+            foreach ($orders as $order) {
+                $totalPrice = Order_Details::where('order_id', $order->id)->sum('price');
+                $order->totalPrice = $totalPrice;
+                $order->priceAfterDiscount = ($order->totalPrice - ($order->totalPrice * ($order->discount / 100)));
+                $order->status = 'Waiting';
+                $order->save();
             }
-            $order->totalPrice = $totalPrice;
-            $order->priceAfterDiscount = $order->totalPrice * $order->discount;
-            $order->status = 'Waiting';
-            $order->save();
+            return "CheckOut Done";
+        } else {
+            return "Cart Empty :(";
         }
     }
 
     public function checkout(Request $request)
     {
-        if(count($request->array) == 0){
-            return $this->apiResponse([], "Cart Empty:(", 200);
-        }
-        foreach ($request->array as $order) {
-            $orderDetails = Order_Details::find($order['id']);
-            if ($orderDetails) {
-                $orderDetails->quantity = $order['quantity'];
-                $orderDetails->price = $order['quantity'] * $orderDetails->unitPrice;
-                $orderDetails->save();
-            } else {
-                return $this->apiResponse([], "Order Not Found", 200);
+        if ($request->exists('array')) {
+            if (count($request->array) == 0) {
+                return $this->apiResponse([], "Cart Empty :(", 200);
             }
+
+            foreach ($request->array as $order_details) {
+                $orderDetails = Order_Details::find($order_details['id']);
+                try {
+                    if ($orderDetails) {
+                        $orderDetails->quantity = $order_details['quantity'];
+                        $orderDetails->price = $order_details['quantity'] * $orderDetails->unitPrice;
+                        $orderDetails->save();
+                    }
+                } catch (Exception $e) {
+                    echo 'Order Details ' . $order_details['id'] . ' Not Found';
+                }
+
+            }
+            $msg = $this->checkOutOrderTable();
+            return $this->apiResponse([], $msg, 200);
+
+        } else {
+            return $this->apiResponse([], "Please Pass Cart Array !", 200);
         }
-        $this->checkOutOrderTable();
-        return $this->apiResponse([], "CheckOut Done", 200);
+        // looping on order details and fill data
+        // $order->order_details->create($request->array);
+
+        // calc price && edit order data
+        // change draft to waiting
+
+//        foreach ($request->array as $order) {
+//            $orderDetails = Order_Details::find($order['id']);
+//            if ($orderDetails) {
+//                $orderDetails->quantity = $order['quantity'];
+//                $orderDetails->price = $order['quantity'] * $orderDetails->unitPrice;
+//                $orderDetails->save();
+//            } else {
+//                return $this->apiResponse([], "Order Not Found", 200);
+//            }
+//        }
+//        $this->checkOutOrderTable();
+//        return $this->apiResponse([], "CheckOut Done", 200);
 
     }
 }
