@@ -19,7 +19,7 @@ class SearchFilterController extends Controller
                 ->orderBy('rating')->select('id', 'name', 'logo', 'rating', 'address')->paginate($request->pagesize);
 
             $result2 = Product::where('name', 'like', '%' . $request->search_query . '%')
-                ->orderBy('rating')->select('id', 'name', 'image', 'rating', 'price', 'calories')->paginate($request->pagesize);
+                ->orderBy('rating')->select('id', 'name', 'description','image', 'rating', 'NumRating','price', 'calories')->paginate($request->pagesize);
 
             return $this->apiResponse(['Products' => $result2, 'Restaurant' => $result1], 'Result successfully send', 200);
 

@@ -165,6 +165,7 @@ class CartController extends Controller
             ['status', '=', 'Draft'],
         ])->get();
 
+
         if ($orders->count() > 0) {
             foreach ($orders as $order) {
                 $totalPrice = Order_Details::where('order_id', $order->id)->sum('price');
@@ -199,6 +200,7 @@ class CartController extends Controller
                 }
 
             }
+
             $msg = $this->checkOutOrderTable();
             return $this->apiResponse([], $msg, 200);
 
