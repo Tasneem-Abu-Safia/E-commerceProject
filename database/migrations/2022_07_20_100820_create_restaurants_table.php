@@ -19,7 +19,7 @@ class CreateRestaurantsTable extends Migration
             $table->string('logo');
             $table->string('description');
             $table->string('phoneNumber');
-            $table->string('address');
+            $table->string('address')->default(null);
             $table->tinyInteger('rating');
             $table->Integer('NumRating')->default(0);
             $table->timestamps();
